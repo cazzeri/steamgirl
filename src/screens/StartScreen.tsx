@@ -1,19 +1,26 @@
 import { Button } from '../components/Button'
+import { CenteredContent } from '../components/CenteredContent'
 import { useGame } from '../context/GameContext'
+import { useNavigate } from 'react-router-dom'
 
 export function StartScreen() {
-  const { newGame, loadGame } = useGame()
-  const hasSavedGame = localStorage.getItem('gameSave') !== null
+  const { game, newGame, loadGame } = useGame()
+  const navigate = useNavigate()
+  
+  // Check if a Game is present (either in context or saved in localStorage)
+  const hasGame = game !== null || localStorage.getItem('gameSave') !== null
 
   const handleContinue = () => {
     const saved = localStorage.getItem('gameSave')
     if (saved) {
       loadGame(saved)
+      navigate('/game')
     }
   }
 
   const handleNewGame = () => {
     newGame()
+    navigate('/game')
   }
 
   const handleLoadGame = () => {
@@ -21,6 +28,7 @@ export function StartScreen() {
     const saved = localStorage.getItem('gameSave')
     if (saved) {
       loadGame(saved)
+      navigate('/game')
     }
   }
 
@@ -28,21 +36,30 @@ export function StartScreen() {
     // TODO: Implement settings
   }
 
+  const handleDemo = () => {
+    navigate('/demo')
+  }
+
   return (
-    <div className="button-row">
-      <Button color="#f97316" disabled={!hasSavedGame} onClick={handleContinue}>
-        Continue
-      </Button>
-      <Button color="#22c55e" onClick={handleNewGame}>
-        New Game
-      </Button>
-      <Button color="#3b82f6" onClick={handleLoadGame}>
-        Load Game
-      </Button>
-      <Button color="#a855f7" onClick={handleSettings}>
-        Settings
-      </Button>
-    </div>
+    <CenteredContent>
+      <div className="button-column">
+        <Button color="#f97316" disabled={!hasGame} onClick={handleContinue}>
+          Continue
+        </Button>
+        <Button color="#22c55e" onClick={handleNewGame}>
+          New Game
+        </Button>
+        <Button color="#3b82f6" onClick={handleLoadGame}>
+          Load Game
+        </Button>
+        <Button color="#a855f7" onClick={handleSettings}>
+          Settings
+        </Button>
+        <Button color="#eab308" onClick={handleDemo}>
+          Demo
+        </Button>
+      </div>
+    </CenteredContent>
   )
 }
 
