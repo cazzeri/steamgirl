@@ -4,6 +4,7 @@ export interface LocationData {
   image?: string
 }
 
+/** Represents a game location with id, name, and image, supporting JSON serialization. */
 export class Location {
   id?: string
   name?: string
@@ -32,4 +33,28 @@ export class Location {
     return location
   }
 }
+
+const LOCATIONS: Record<string, Location> = {}
+
+export function registerLocation(id: string, location: Location): void {
+  if (id in LOCATIONS) {
+    throw new Error(`Duplicate location id: ${id}`)
+  }
+  LOCATIONS[id] = location
+}
+
+export function getLocation(id: string): Location | undefined {
+  return LOCATIONS[id]
+}
+
+export function getAllLocations(): Record<string, Location> {
+  return { ...LOCATIONS }
+}
+
+// Register default location with city.jpg image
+const defaultLocation = new Location()
+defaultLocation.id = 'default'
+defaultLocation.name = 'Default City'
+defaultLocation.image = '/images/city.jpg'
+registerLocation('default', defaultLocation)
 

@@ -11,9 +11,7 @@ export function StartScreen() {
   const hasGame = game !== null || localStorage.getItem('gameSave') !== null
 
   const handleContinue = () => {
-    const saved = localStorage.getItem('gameSave')
-    if (saved) {
-      loadGame(saved)
+    if (loadGame()) {
       navigate('/game')
     }
   }
@@ -25,9 +23,7 @@ export function StartScreen() {
 
   const handleLoadGame = () => {
     // TODO: Implement file picker or load dialog
-    const saved = localStorage.getItem('gameSave')
-    if (saved) {
-      loadGame(saved)
+    if (loadGame()) {
       navigate('/game')
     }
   }

@@ -1,14 +1,15 @@
 import { PlayerPanel } from '../components/PlayerPanel'
-import { CenteredContent } from '../components/CenteredContent'
+import { LocationView } from '../components/LocationView'
+import { useGame } from '../context/GameContext'
 
 export function GameScreen() {
+  const { game } = useGame()
+
   return (
     <div className="game-screen">
       <PlayerPanel />
       <div style={{ flex: 1, height: '100%' }}>
-        <CenteredContent>
-          <p>Second column content</p>
-        </CenteredContent>
+        <LocationView location={game?.location ?? null} />
       </div>
     </div>
   )
