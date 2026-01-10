@@ -51,7 +51,13 @@ export function getAllLocations(): Record<string, Location> {
   return { ...LOCATIONS }
 }
 
-// Register default location with city.jpg image
+// Register default locations
+const stationLocation = new Location()
+stationLocation.id = 'station'
+stationLocation.name = 'Steam Station'
+stationLocation.image = '/images/station.jpg'
+registerLocation('station', stationLocation)
+
 const defaultLocation = new Location()
 defaultLocation.id = 'default'
 defaultLocation.name = 'Default City'

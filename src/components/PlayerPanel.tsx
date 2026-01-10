@@ -1,6 +1,7 @@
 import { Button } from './Button'
 import { useNavigate } from 'react-router-dom'
 import { useGame } from '../context/GameContext'
+import { Clock } from './Clock'
 
 export function PlayerPanel() {
   const navigate = useNavigate()
@@ -26,8 +27,9 @@ export function PlayerPanel() {
       </div>
 
       <main className="game-canvas canvas-framed" >
-        <div style={{ padding: 'var(--space-md)' }}>
+        <div style={{ padding: 'var(--space-md)', display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
           <p>Name: {game?.player.name || 'Unknown'}</p>
+          <Clock />
         </div>
       </main>
 

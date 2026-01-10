@@ -2,7 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { App } from './App'
 import './style.css'
-import './scripts/Start'
+import './story/Utility'
+import './story/Start'
 
 const rootElement = document.getElementById('root')
 

@@ -48,7 +48,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const loadGame = (): boolean => {
     try {
-      const saved = localStorage.getItem('gameSave')
+      const saved = localStorage.getItem('gameSaveManual')
       if (!saved) {
         return false
       }
@@ -71,7 +71,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const saveGame = () => {
     if (game) {
-      localStorage.setItem('gameSave', JSON.stringify(game.toJSON()))
+      localStorage.setItem('gameSaveManual', JSON.stringify(game.toJSON()))
     }
   }
 
@@ -91,6 +91,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
     if (!game) {
       throw new Error('Cannot run script: no game loaded')
     }
+    
+    // Clear the scene before running a new script
+    game.clearScene()
     
     // Run the script (may modify game state)
     const result = runScriptImpl(name, game, params)

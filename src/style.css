@@ -26,7 +26,7 @@
   --space-lg: 24px;
   --space-xl: 32px;
 
-  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: 'Open Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 /* ==========================================================================
@@ -39,7 +39,10 @@
   box-sizing: border-box;
 }
 
-html,
+html {
+  font-size: 18px;
+}
+
 body {
   height: 100vh;
   width: 100vw;
@@ -55,6 +58,7 @@ body {
 
 body {
   font-family: var(--font-sans);
+  font-size: 1rem;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   color: var(--text-main);
@@ -80,6 +84,7 @@ h3 {
 }
 
 p {
+  text-indent: 0.5em;
   margin: 0 0 var(--space-xs);
 }
 
@@ -98,11 +103,11 @@ p {
 }
 
 .player-panel {
-  padding: var(--space-lg);
+  padding: var(--space-sm);
 
   display: grid;
   grid-template-rows: auto 1fr auto;
-  gap: var(--space-lg);
+  gap: var(--space-sm);
   height: 100%;
 }
 
@@ -186,10 +191,40 @@ p {
 
 .dev-controls {
   display: flex;
-  flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
+  gap: var(--space-xs);
+}
+
+.scene-overlay {
+  position: absolute;
+  bottom: var(--space-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-width: 600px;
+  width: calc(100% - (var(--space-lg) * 2));
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-strong), var(--shadow-inner);
+  backdrop-filter: blur(10px);
+}
+
+.scene-dialog p {
+  margin: 0;
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+.scene-actions {
+  display: flex;
+  justify-content: center;
   gap: var(--space-sm);
+  flex-wrap: wrap;
 }
 
 .placeholder {
@@ -298,6 +333,17 @@ p {
   font-size: 0.9rem;
 }
 
+.clock-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: var(--space-sm) 0;
+}
+
+.clock-svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
 .button-primary {
   box-shadow: var(--shadow-strong);
 }
@@ -328,4 +374,15 @@ p {
   padding: 6px 14px;
   background: rgba(0, 0, 0, 0.3);
   font-size: 0.9rem;
+}
+
+.clock-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: var(--space-sm) 0;
+}
+
+.clock-svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
 }
