@@ -1,5 +1,6 @@
 import { Game } from './Game'
 import type { Script } from './Scripts'
+import { consumeAlcohol } from '../story/Effects'
 
 export type ItemId = string
 
@@ -43,12 +44,7 @@ const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
     stackable: true,
     description: 'A bottle of sweet wine with an intoxicating aroma.',
     onConsume: (game: Game, _params: {}) => {
-      game.addEffect('intoxicated', { alcohol: 60 })
-      // Remove one from inventory
-      const wineItem = game.player.inventory.find(item => item.id === 'sweet-wine')
-      if (wineItem) {
-        game.player.removeItem('sweet-wine', 1)
-      }
+      consumeAlcohol(game, 60)
     },
   },
 }

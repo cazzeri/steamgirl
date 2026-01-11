@@ -40,3 +40,22 @@ export const sleepyEffect: CardDefinition = {
 // Register the effect definitions
 registerCardDefinition('intoxicated', intoxicatedEffect)
 registerCardDefinition('sleepy', sleepyEffect)
+
+/** 
+ * Consume alcohol script - adds alcohol amount to the player's intoxicated effect.
+ * Adds the intoxicated effect if the player doesn't have it.
+ * Adds to existing alcohol value if the player already has the effect.
+ */
+export function consumeAlcohol(game: Game, amount: number): void {
+  // Find existing intoxicated effect
+  const intoxicatedCard = game.player.cards.find(card => card.id === 'intoxicated' && card.type === 'Effect')
+  
+  if (intoxicatedCard) {
+    // Add to existing alcohol value
+    const currentAlcohol = (intoxicatedCard.alcohol as number) || 0
+    intoxicatedCard.alcohol = currentAlcohol + amount
+  } else {
+    // Add new intoxicated effect with the alcohol amount
+    game.addEffect('intoxicated', { alcohol: amount })
+  }
+}

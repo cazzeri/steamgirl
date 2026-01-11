@@ -54,6 +54,9 @@ export function InventoryView() {
               const itemDef = selectedItem.template
               if (itemDef.onConsume) {
                 game.clearScene()
+                // Remove the item from inventory first
+                game.player.removeItem(selectedItem.id, 1)
+                // Then call the onConsume script
                 itemDef.onConsume(game, {})
                 // Run afterUpdate scripts for all cards
                 game.player.cards.forEach(card => {
