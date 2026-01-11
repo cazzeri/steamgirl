@@ -1,5 +1,5 @@
 import { Item } from '../model/Item'
-import { MouseOver } from './MouseOver'
+import { Tooltip } from './Tooltip'
 
 type ItemViewProps = {
   item: Item
@@ -42,13 +42,9 @@ export function ItemView({ item }: ItemViewProps) {
 
   if (itemDef.description) {
     return (
-      <MouseOver hoverContent={
-        <div className="hover-panel">
-          <p style={{ margin: 0 }}>{itemDef.description}</p>
-        </div>
-      }>
+      <Tooltip content={<div style={{ margin: 0 }}>{itemDef.description}</div>}>
         {content}
-      </MouseOver>
+      </Tooltip>
     )
   }
 

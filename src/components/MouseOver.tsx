@@ -9,10 +9,10 @@ type MouseOverProps = {
 
 export function MouseOver({ children, hoverContent }: MouseOverProps) {
   return (
-    <div className="mouse-over-target">
+    <span className="mouse-over-target">
       {children}
-      <div className="mouse-over-overlay">{hoverContent}</div>
-    </div>
+      <span className="mouse-over-overlay">{hoverContent}</span>
+    </span>
   )
 }
 

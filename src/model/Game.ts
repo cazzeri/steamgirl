@@ -2,8 +2,13 @@ import { Player, type PlayerData } from './Player'
 import { Location, type LocationData, getLocation as getLocationDefinition } from './Location'
 import { runScript as runScriptImpl } from './Scripts'
 
+export type ParagraphContent = 
+  | { type: 'text'; text: string }
+  | { type: 'highlight'; text: string; color: string; hoverText?: string }
+
 export type SceneContentItem = 
   | { type: 'text'; text: string; color?: string }
+  | { type: 'paragraph'; content: ParagraphContent[] }
 
 export type SceneOptionItem = 
   | { type: 'button'; script: [string, {}]; label?: string }
@@ -97,7 +102,7 @@ export class Game {
    */
   add(item: string | SceneContentItem | SceneOptionItem | Array<string | SceneContentItem | SceneOptionItem>): this {
     if (typeof item === 'string') {
-      this.scene.content.push({ type: 'text', text: item })
+      this.scene.content.push({ type: 'paragraph', content: [{ type: 'text', text: item }] })
     } else if (Array.isArray(item)) {
       item.forEach(i => this.add(i))
     } else if ('script' in item) {

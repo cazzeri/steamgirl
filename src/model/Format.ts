@@ -1,24 +1,34 @@
-import type { SceneContentItem, SceneOptionItem } from './Game'
+import type { SceneContentItem, SceneOptionItem, ParagraphContent } from './Game'
 
 /** Creates a text content item. */
 export function txt(text: string): SceneContentItem {
   return { type: 'text', text }
 }
 
-/** Creates paragraph text content items. Accepts variadic arguments - multiple texts create multiple items. */
-export function p(...texts: string[]): SceneContentItem | SceneContentItem[] {
-  if (texts.length === 0) {
-    throw new Error('p() requires at least one text argument')
+/** Creates a paragraph content item. Accepts variadic arguments - can be strings or formatted content (highlights). */
+export function p(...content: (string | ParagraphContent)[]): SceneContentItem {
+  if (content.length === 0) {
+    throw new Error('p() requires at least one content argument')
   }
-  if (texts.length === 1) {
-    return { type: 'text', text: texts[0] }
-  }
-  return texts.map(text => ({ type: 'text', text }))
+  
+  const paragraphContent: ParagraphContent[] = content.map(item => {
+    if (typeof item === 'string') {
+      return { type: 'text', text: item }
+    }
+    return item
+  })
+  
+  return { type: 'paragraph', content: paragraphContent }
 }
 
-/** Creates a colored text content item. */
+/** Creates a coloured text content item. */
 export function colour(text: string, color: string): SceneContentItem {
   return { type: 'text', text, color }
+}
+
+/** Creates a highlight span with color and optional mouseover content. */
+export function highlight(text: string, color: string, hoverText?: string): ParagraphContent {
+  return { type: 'highlight', text, color, hoverText }
 }
 
 /** Creates a button option that runs a script. */

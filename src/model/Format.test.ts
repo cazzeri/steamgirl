@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { txt, p, colour, option } from './Format'
+import { txt, p, colour, option, highlight } from './Format'
 
 describe('Format', () => {
   describe('txt', () => {
@@ -13,29 +13,68 @@ describe('Format', () => {
   })
 
   describe('p', () => {
-    it('should create a text SceneContentItem with single argument', () => {
+    it('should create a paragraph SceneContentItem with single argument', () => {
       const result = p('Paragraph text')
       expect(result).toEqual({
-        type: 'text',
-        text: 'Paragraph text',
+        type: 'paragraph',
+        content: [{ type: 'text', text: 'Paragraph text' }],
       })
     })
 
-    it('should create multiple text SceneContentItems with multiple arguments', () => {
-      const result = p('First paragraph', 'Second paragraph', 'Third paragraph')
-      expect(result).toEqual([
-        { type: 'text', text: 'First paragraph' },
-        { type: 'text', text: 'Second paragraph' },
-        { type: 'text', text: 'Third paragraph' },
-      ])
+    it('should create a paragraph with multiple text parts', () => {
+      const result = p('First part', 'Second part', 'Third part')
+      expect(result).toEqual({
+        type: 'paragraph',
+        content: [
+          { type: 'text', text: 'First part' },
+          { type: 'text', text: 'Second part' },
+          { type: 'text', text: 'Third part' },
+        ],
+      })
     })
 
     it('should handle two arguments', () => {
       const result = p('Line one', 'Line two')
-      expect(result).toEqual([
-        { type: 'text', text: 'Line one' },
-        { type: 'text', text: 'Line two' },
-      ])
+      expect(result).toEqual({
+        type: 'paragraph',
+        content: [
+          { type: 'text', text: 'Line one' },
+          { type: 'text', text: 'Line two' },
+        ],
+      })
+    })
+
+    it('should handle highlights in paragraphs', () => {
+      const result = p('Hello ', highlight('world', '#ff0000', 'A world'), '!')
+      expect(result).toEqual({
+        type: 'paragraph',
+        content: [
+          { type: 'text', text: 'Hello ' },
+          { type: 'highlight', text: 'world', color: '#ff0000', hoverText: 'A world' },
+          { type: 'text', text: '!' },
+        ],
+      })
+    })
+  })
+
+  describe('highlight', () => {
+    it('should create a highlight ParagraphContent', () => {
+      const result = highlight('Text', '#ff0000', 'Hover text')
+      expect(result).toEqual({
+        type: 'highlight',
+        text: 'Text',
+        color: '#ff0000',
+        hoverText: 'Hover text',
+      })
+    })
+
+    it('should create a highlight without hover text', () => {
+      const result = highlight('Text', '#ff0000')
+      expect(result).toEqual({
+        type: 'highlight',
+        text: 'Text',
+        color: '#ff0000',
+      })
     })
   })
 
