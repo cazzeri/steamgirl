@@ -7,8 +7,11 @@
     radial-gradient(circle at 100% 100%, rgba(146, 79, 46, 0.2), transparent 55%),
     linear-gradient(135deg, #291812, #14100f);
 
+    --bg-overlay: rgba(0, 0, 0, 0.6);
+
   --border-subtle: rgba(220, 170, 90, 0.4); /* brass edge */
   --border-dashed: rgba(255, 200, 120, 0.6); /* riveted accent */
+  --border-main: rgb(218, 122, 20); /* brass highlight */
 
   --text-main: #f4e4c4; /* parchment */
   --text-muted: #d0b691; /* aged parchment */
@@ -48,6 +51,7 @@ body {
   width: 100vw;
   margin: 0;
   padding: 0;
+  color: var(--text-main);
   overflow: hidden;
 }
 
@@ -196,17 +200,23 @@ p {
   gap: var(--space-xs);
 }
 
+/* Overlays for the location view */
+
+.overlays-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  align-items: center;
+}
+
 .scene-overlay {
-  position: absolute;
-  bottom: var(--space-lg);
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
   max-width: 600px;
-  width: calc(100% - (var(--space-lg) * 2));
-  background: var(--bg-panel);
+  width: 100%;
+  background: var(--bg-overlay);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
@@ -214,10 +224,10 @@ p {
   backdrop-filter: blur(10px);
 }
 
-.scene-dialog p {
+.scene-overlay p {
   margin: 0;
   color: var(--text-main);
-  line-height: 1.6;
+  margin-bottom: var(--space-sm);
 }
 
 .scene-actions {
@@ -386,3 +396,47 @@ p {
 .clock-svg {
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
 }
+
+/* Overlays for the navigation links */
+
+.nav-links {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 600px;
+  width: 100%;
+}
+
+.nav-link-thumbnail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs);
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-strong), var(--shadow-inner);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+  max-width: 120px;
+  color: inherit;
+}
+
+.nav-link-thumbnail:hover {
+  border-color: var(--border-main);
+  box-shadow: var(--shadow-strong), var(--shadow-inner);
+}
+
+.nav-link-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+}
+

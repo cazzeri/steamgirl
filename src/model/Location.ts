@@ -1,66 +1,121 @@
+import { Game } from "./Game"
+import type { Script } from "./Scripts"
+
+// Mutable data for a location, used for serialization
 export interface LocationData {
   id?: string
-  name?: string
-  image?: string
+  visited?: boolean
+
 }
 
-/** Represents a game location with id, name, and image, supporting JSON serialization. */
-export class Location {
-  id?: string
+// Static / library information for a location
+export interface LocationDefinition {
   name?: string
+  description?: string
   image?: string
+  links?: LocationLink[]
+  onFirstArrive?: Script
+  onArrive?: Script
+}
 
-  constructor() {
-    this.id = undefined
-    this.name = undefined
-    this.image = undefined
+export interface LocationLink {
+  dest: string
+  time: number
+  onFollow?: Script
+}
+
+// Location definitions as a plain object for better ergonomics and editing
+const LOCATION_DEFINITIONS: Record<string, LocationDefinition> = {
+  station: {
+    name: 'Main Station',
+    description: 'The bustling main railway station, filled with steam and travelers.',
+    image: '/images/station.jpg',
+    links: [{ dest: 'default', time: 10 }], // 10 minutes to city
+  },
+  default: {
+    name: 'City Centre',
+    description: 'The heart of the city, where commerce and culture meet.',
+    image: '/images/city.jpg',
+    links: [{ dest: 'station', time: 10 }, { dest: 'backstreets', time: 5 }, { dest: 'school', time: 5 }], // 10 minutes back to station, 5 minutes to backstreets, 5 minutes to school
+  },
+  backstreets: {
+    name: 'Backstreets',
+    description: 'The winding alleys and hidden passages of the city, where secrets lurk in the shadows.',
+    image: '/images/backstreet.jpg',
+    links: [{ dest: 'default', time: 5 }], // 5 minutes to city centre
+    onFirstArrive: (g: Game) => {
+      g.add('You arrive in the backstreets. The air is thick with the smell of coal and oil. You can hear the sound of steam engines in the distance.')
+    },
+  },
+  school: {
+    name: 'University',
+    description: 'A grand educational institution where knowledge flows like steam through pipes.',
+    image: '/images/school.jpg',
+    links: [{ dest: 'default', time: 5 }, { dest: 'lake', time: 8 }], // 5 minutes to city centre, 8 minutes to lake
+  },
+  lake: {
+    name: 'The Lake',
+    description: 'A serene city lake, where steam gently rises from the surface.',
+    image: '/images/lake.jpg',
+    links: [{ dest: 'school', time: 8 }], // 8 minutes back to school
+  },
+}
+
+/** Represents a game location instance with mutable state. Definitional data is accessed via the template property. */
+export class Location {
+  id: string
+  visited?: boolean
+
+  constructor(id: string) {
+    this.id = id
+    this.visited = false
+  }
+
+  /** Gets the location definition template. */
+  get template(): LocationDefinition {
+    const definition = LOCATION_DEFINITIONS[this.id]
+    if (!definition) {
+      throw new Error(`Location definition not found: ${this.id}`)
+    }
+    return definition
   }
 
   toJSON(): LocationData {
+    // Only serialize mutable state (visited) and id
     return {
       id: this.id,
-      name: this.name,
-      image: this.image,
+      visited: this.visited,
     }
   }
 
   static fromJSON(json: string | LocationData): Location {
     const data = typeof json === 'string' ? JSON.parse(json) : json
-    const location = new Location()
-    location.id = data.id
-    location.name = data.name
-    location.image = data.image
+    const locationId = data.id
+    
+    if (!locationId) {
+      throw new Error('Location.fromJSON requires an id')
+    }
+    
+    // Verify definition exists
+    if (!LOCATION_DEFINITIONS[locationId]) {
+      throw new Error(`Location definition not found: ${locationId}`)
+    }
+    
+    // Create location instance with id
+    const location = new Location(locationId)
+    
+    // Apply serialized mutable state
+    location.visited = data.visited ?? false
+    
     return location
   }
 }
 
-const LOCATIONS: Record<string, Location> = {}
-
-export function registerLocation(id: string, location: Location): void {
-  if (id in LOCATIONS) {
-    throw new Error(`Duplicate location id: ${id}`)
-  }
-  LOCATIONS[id] = location
+export function getLocation(id: string): LocationDefinition | undefined {
+  return LOCATION_DEFINITIONS[id]
 }
 
-export function getLocation(id: string): Location | undefined {
-  return LOCATIONS[id]
+export function getAllLocations(): Record<string, LocationDefinition> {
+  return { ...LOCATION_DEFINITIONS }
 }
-
-export function getAllLocations(): Record<string, Location> {
-  return { ...LOCATIONS }
-}
-
-// Register default locations
-const stationLocation = new Location()
-stationLocation.id = 'station'
-stationLocation.name = 'Steam Station'
-stationLocation.image = '/images/station.jpg'
-registerLocation('station', stationLocation)
-
-const defaultLocation = new Location()
-defaultLocation.id = 'default'
-defaultLocation.name = 'Default City'
-defaultLocation.image = '/images/city.jpg'
-registerLocation('default', defaultLocation)
 

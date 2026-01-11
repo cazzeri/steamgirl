@@ -1,8 +1,9 @@
 import { Player, type PlayerData } from './Player'
-import { Location, type LocationData, getLocation } from './Location'
+import { Location, type LocationData } from './Location'
+import { runScript as runScriptImpl } from './Scripts'
 
 export type SceneContentItem = 
-  | { type: 'text'; text: string }
+  | { type: 'text'; text: string; color?: string }
 
 export type SceneOptionItem = 
   | { type: 'button'; script: [string, {}]; label?: string }
@@ -58,18 +59,11 @@ export class Game {
     return this.locations.get(this.currentLocation) ?? null
   }
 
-  /** Ensures a location exists in the game's locations map, pulling from registry if needed. */
+  /** Ensures a location exists in the game's locations map, creating a new instance if needed. */
   ensureLocation(locationId: string): void {
     if (!this.locations.has(locationId)) {
-      const locationFromRegistry = getLocation(locationId)
-      if (locationFromRegistry) {
-        // Create a copy to avoid mutating the registry
-        const location = new Location()
-        location.id = locationFromRegistry.id
-        location.name = locationFromRegistry.name
-        location.image = locationFromRegistry.image
-        this.locations.set(locationId, location)
-      }
+      const location = new Location(locationId)
+      this.locations.set(locationId, location)
     }
   }
 
@@ -81,6 +75,34 @@ export class Game {
   /** Add an option button to the current scene that runs a script. */
   addOption(scriptName: string, params: {} = {}, label?: string): void {
     this.scene.options.push({ type: 'button', script: [scriptName, params], label })
+  }
+
+  /** 
+   * Add content or options to the current scene. Supports fluent chaining.
+   * - String: adds as text content
+   * - SceneContentItem: adds directly as content
+   * - SceneOptionItem: adds directly as option
+   * - Array: adds all items in sequence
+   */
+  add(item: string | SceneContentItem | SceneOptionItem | Array<string | SceneContentItem | SceneOptionItem>): this {
+    if (typeof item === 'string') {
+      this.scene.content.push({ type: 'text', text: item })
+    } else if (Array.isArray(item)) {
+      item.forEach(i => this.add(i))
+    } else if ('script' in item) {
+      // It's a SceneOptionItem
+      this.scene.options.push(item)
+    } else {
+      // It's a SceneContentItem
+      this.scene.content.push(item)
+    }
+    return this
+  }
+
+  /** Run a script on this game instance. Returns this for fluent chaining. */
+  run(scriptName: string, params: {} = {}): this {
+    runScriptImpl(scriptName, this, params)
+    return this
   }
 
   /** Clear the current scene (resets content and options). */
@@ -116,7 +138,7 @@ export class Game {
     game.version = data.version
     game.score = data.score ?? 0
     game.player = Player.fromJSON(data.player)
-    game.currentLocation = data.currentLocation ?? 'default'
+    game.currentLocation = data.currentLocation ?? 'station'
     game.time = data.time ?? game.time // Use provided time or keep default from constructor
     
     // Handle scene deserialization - migrate old format or use new format
@@ -136,12 +158,13 @@ export class Game {
       // If scene exists but doesn't match expected format, keep default from constructor
     }
     
-    // Deserialize locations map
+    // Deserialize locations map - create copies from prototypes and apply serialized changes
     if (data.locations) {
       game.locations = new Map<string, Location>()
       Object.entries(data.locations).forEach(([id, locationData]) => {
-        const location = Location.fromJSON(locationData as LocationData)
-        location.id = id
+        // Ensure id matches the key (for backwards compatibility)
+        const locationDataWithId: LocationData = Object.assign({ id }, locationData as LocationData)
+        const location = Location.fromJSON(locationDataWithId)
         game.locations.set(id, location)
       })
     }

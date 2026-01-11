@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 
 interface SceneOverlayProps {
   scene: SceneData
+  hideEndButton?: boolean
 }
 
 export function SceneOverlay({ scene }: SceneOverlayProps) {
@@ -34,37 +35,37 @@ export function SceneOverlay({ scene }: SceneOverlayProps) {
         <div className="scene-dialog">
           {scene.content.map((item, index) => {
             if (item.type === 'text') {
-              return <p key={index}>{item.text}</p>
+              return (
+                <p key={index} style={item.color ? { color: item.color } : undefined}>
+                  {item.text}
+                </p>
+              )
             }
             return null
           })}
         </div>
       )}
-      <div className="scene-actions">
-        {hasOptions ? (
-          scene.options.map((option, index) => {
-            if (option.type === 'button') {
-              const [scriptName] = option.script
-              const scriptExists = getScript(scriptName) !== undefined
-              const buttonLabel = option.label || 'Continue'
-              return (
-                <Button 
-                  key={index} 
-                  onClick={() => handleOption(option)}
-                  disabled={!scriptExists}
-                >
-                  {buttonLabel}
-                </Button>
-              )
-            }
-            return null
-          })
-        ) : (
-          <Button onClick={handleEnd}>
-            End
-          </Button>
-        )}
-      </div>
+      {(hasOptions) && (
+        <div className="scene-actions">
+            {scene.options.map((option, index) => {
+              if (option.type === 'button') {
+                const [scriptName] = option.script
+                const scriptExists = getScript(scriptName) !== undefined
+                const buttonLabel = option.label || 'Continue'
+                return (
+                  <Button 
+                    key={index} 
+                    onClick={() => handleOption(option)}
+                    disabled={!scriptExists}
+                  >
+                    {buttonLabel}
+                  </Button>
+                )
+              }
+              return null
+            })} 
+        </div>
+      )}
     </div>
   )
 }

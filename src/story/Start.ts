@@ -1,36 +1,36 @@
 import { Game } from '../model/Game'
 import { makeScripts } from '../model/Scripts'
-import { runScript } from '../model/Scripts'
+import { option } from '../model/Format'
 
 export const startScripts = {
   start: (g: Game) => {
     g.player.name = 'NewPlayer'
-    g.addText('Steam hisses as the train grinds to a halt. You step onto the platform of New Victoria Station, your boots clinking against the brass-plated floor.')
-    g.addText('The air is thick with the smell of coal and oil. Through the steam, you can see the grand station—a marvel of engineering with gears visible through glass panels in the walls.')
-    g.addText('Your adventure begins here. Where will you go?')
-    g.addOption('goToCity', {}, 'Go to the City')
-    g.addOption('stationStay', {}, 'Stay at the Station')
+    g.add('Steam hisses as the train grinds to a halt. You step onto the platform of New Victoria Station, your boots clinking against the brass-plated floor.')
+      .add('The air is thick with the smell of coal and oil. Through the steam, you can see the grand station—a marvel of engineering with gears visible through glass panels in the walls.')
+      .add('Your adventure begins here. Where will you go?')
+      .add(option('goToCity', {}, 'Go to the City'))
+      .add(option('stationStay', {}, 'Stay at the Station'))
   },
   goToCity: (g: Game) => {
-    runScript('go', g, { location: 'default', time: 5 })
-    g.addText('You leave the station and make your way into the city. The walk takes about 15 minutes through the industrial district.')
-    g.addText('The air is thick with the smell of oil and coal. Clockwork automatons patrol the streets, their gears visible through glass panels in their chests.')
-    g.addOption('start-3')
+    g.run('go', { location: 'default', time: 5 })
+      .add('You leave the station and make your way into the city. The walk takes about 15 minutes through the industrial district.')
+      .add('The air is thick with the smell of oil and coal. Clockwork automatons patrol the streets, their gears visible through glass panels in their chests.')
+      .add(option('start-3'))
   },
   stationStay: (g: Game) => {
-    g.addText('You decide to explore the station a bit more. The platform stretches out before you, with various vendors and travelers bustling about.')
-    g.addText('A mechanical ticket inspector with clockwork eyes approaches, checking the brass tickets of passengers.')
-    g.addOption('goToCity', {}, 'Go to the City')
+    g.add('You decide to explore the station a bit more. The platform stretches out before you, with various vendors and travelers bustling about.')
+      .add('A mechanical ticket inspector with clockwork eyes approaches, checking the brass tickets of passengers.')
+      .add(option('goToCity', {}, 'Go to the City'))
   },
   'start-3': (g: Game) => {
-    g.addText('A figure approaches from the shadows—a woman with mechanical enhancements, her left arm replaced with intricate brass gears and copper wiring.')
-    g.addText('Before you can speak, she disappears back into the steam-filled alleys. You stand alone on the cobblestones, wondering what to do next.')
-    g.addOption('startExplore', {}, 'Explore the Streets')
-    g.addOption('start-4', {}, 'Wait for Her Return')
+    g.add('A figure approaches from the shadows—a woman with mechanical enhancements, her left arm replaced with intricate brass gears and copper wiring.')
+      .add('Before you can speak, she disappears back into the steam-filled alleys. You stand alone on the cobblestones, wondering what to do next.')
+      .add(option('startExplore', {}, 'Explore the Streets'))
+      .add(option('start-4', {}, 'Wait for Her Return'))
   },
   startExplore: (g: Game) => {
     // Advance time by 12 minutes (720 seconds)
-    runScript('timeLapse', g, { seconds: 12 * 60 })
+    g.run('timeLapse', { seconds: 12 * 60 })
     
     // Random street encounters for flavor
     const encounters = [
@@ -45,14 +45,16 @@ export const startScripts = {
     
     const randomEncounter = encounters[Math.floor(Math.random() * encounters.length)]
     
-    g.addText('You decide to explore the streets, taking in the sights and sounds of New Victoria.')
-    g.addText(randomEncounter)
-    g.addText('After this brief moment, you consider your options.')
-    g.addOption('startExplore', {}, 'Explore More')
-    g.addOption('start-4', {}, 'Continue with the Story')
+    g.add([
+      'You decide to explore the streets, taking in the sights and sounds of New Victoria.',
+      randomEncounter,
+      'After this brief moment, you consider your options.',
+      option('startExplore', {}, 'Explore More'),
+      option('start-4', {}, 'Continue with the Story'),
+    ])
   },
   'start-4': (g: Game) => {
-    g.addText('"Welcome to New Victoria," she says, her voice a mix of human warmth and mechanical precision. "Your adventure begins now."')
+    g.add('"Welcome to New Victoria," she says, her voice a mix of human warmth and mechanical precision. "Your adventure begins now."')
     // No options - this is the end of the introduction
   },
 }
