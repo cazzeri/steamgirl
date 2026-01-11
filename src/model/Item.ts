@@ -17,6 +17,7 @@ export interface ItemDefinition {
   image?: string
   stackable?: boolean
   onConsume?: Script
+  onExamine?: Script
 }
 
 // Item definitions as a plain object for better ergonomics and editing
@@ -45,6 +46,27 @@ const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
     description: 'A bottle of sweet wine with an intoxicating aroma.',
     onConsume: (game: Game, _params: {}) => {
       consumeAlcohol(game, 60)
+    },
+  },
+  'acceptance-letter': {
+    name: 'Acceptance Letter',
+    description: 'A formal letter with an official seal.',
+    onExamine: (game: Game, _params: {}) => {
+      game.clearScene()
+      game.add([
+        'You unfold the crisp parchment and read:',
+        '',
+        'Dear '+game.player.name+',',
+        '',
+        'We are pleased to inform you that your application has been accepted. You have been granted admission to the Academy of Mechanical Arts and Sciences.',
+        '',
+        'Please arrive at the Academy of Mechanical Arts and Sciences at 9am on the 6th Jan, 1902',
+        '',
+        'Welcome to a new chapter in your life.',
+        '',
+        'Signed,',
+        'The Academy Board of Admissions'
+      ])
     },
   },
 }

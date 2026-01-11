@@ -47,34 +47,58 @@ export function InventoryView() {
           {selectedItem.template.description && (
             <p>{selectedItem.template.description}</p>
           )}
-          <Button
-            disabled={!selectedItem.template.onConsume || game.scene.options.length > 0}
-            onClick={() => {
-              if (!game || !selectedItem) return
-              const itemDef = selectedItem.template
-              if (itemDef.onConsume) {
-                game.clearScene()
-                // Remove the item from inventory first
-                game.player.removeItem(selectedItem.id, 1)
-                // Then call the onConsume script
-                itemDef.onConsume(game, {})
-                // Run afterUpdate scripts for all cards
-                game.player.cards.forEach(card => {
-                  const cardDef = card.template
-                  if (cardDef.afterUpdate) {
-                    cardDef.afterUpdate(game, {})
+          <div style={{ display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
+            {selectedItem.template.onExamine && (
+              <Button
+                disabled={game.scene.options.length > 0}
+                onClick={() => {
+                  if (!game || !selectedItem) return
+                  const itemDef = selectedItem.template
+                  if (itemDef.onExamine) {
+                    game.clearScene()
+                    itemDef.onExamine(game, {})
+                    // Trigger React update
+                    const gameJson = JSON.stringify(game.toJSON())
+                    const updatedGame = Game.fromJSON(gameJson)
+                    setGame(updatedGame)
+                    localStorage.setItem('gameSave', gameJson)
                   }
-                })
-                // Trigger React update
-                const gameJson = JSON.stringify(game.toJSON())
-                const updatedGame = Game.fromJSON(gameJson)
-                setGame(updatedGame)
-                localStorage.setItem('gameSave', gameJson)
-              }
-            }}
-          >
-            Use
-          </Button>
+                }}
+              >
+                Examine
+              </Button>
+            )}
+            {selectedItem.template.onConsume && (
+              <Button
+                disabled={game.scene.options.length > 0}
+                onClick={() => {
+                  if (!game || !selectedItem) return
+                  const itemDef = selectedItem.template
+                  if (itemDef.onConsume) {
+                    game.clearScene()
+                    // Remove the item from inventory first
+                    game.player.removeItem(selectedItem.id, 1)
+                    // Then call the onConsume script
+                    itemDef.onConsume(game, {})
+                    // Run afterUpdate scripts for all cards
+                    game.player.cards.forEach(card => {
+                      const cardDef = card.template
+                      if (cardDef.afterUpdate) {
+                        cardDef.afterUpdate(game, {})
+                      }
+                    })
+                    // Trigger React update
+                    const gameJson = JSON.stringify(game.toJSON())
+                    const updatedGame = Game.fromJSON(gameJson)
+                    setGame(updatedGame)
+                    localStorage.setItem('gameSave', gameJson)
+                  }
+                }}
+              >
+                Use
+              </Button>
+            )}
+          </div>
         </div>
       )}
     </div>
