@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { Game } from './Game'
+import { Item } from './Item'
 
 describe('Game', () => {
   it('should create a new Game', () => {
@@ -58,5 +59,34 @@ describe('Game', () => {
     expect(game3.version).toBe(2)
     expect(game3.score).toBe(100)
     expect(game3.player.name).toBe('TestPlayer')
+  })
+
+  it('should serialize and deserialize player inventory correctly', () => {
+    const game1 = new Game()
+    game1.player.inventory = [
+      new Item('test-item', 1),
+      new Item('crown', 10),
+    ]
+    
+    // Serialize and deserialize
+    const json1 = JSON.stringify(game1.toJSON())
+    const game2 = Game.fromJSON(json1)
+    
+    // Verify inventory is preserved
+    expect(game2.player.inventory.length).toBe(2)
+    expect(game2.player.inventory[0].id).toBe('test-item')
+    expect(game2.player.inventory[0].number).toBe(1)
+    expect(game2.player.inventory[1].id).toBe('crown')
+    expect(game2.player.inventory[1].number).toBe(10)
+    
+    // Round-trip again
+    const json2 = JSON.stringify(game2.toJSON())
+    const game3 = Game.fromJSON(json2)
+    
+    expect(game3.player.inventory.length).toBe(2)
+    expect(game3.player.inventory[0].id).toBe('test-item')
+    expect(game3.player.inventory[0].number).toBe(1)
+    expect(game3.player.inventory[1].id).toBe('crown')
+    expect(game3.player.inventory[1].number).toBe(10)
   })
 })

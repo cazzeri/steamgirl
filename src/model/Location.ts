@@ -38,10 +38,10 @@ export interface LocationActivity {
 // These are the standard locations. Others might be added elsewhere
 const LOCATION_DEFINITIONS: Record<LocationId, LocationDefinition> = {
   station: {
-    name: 'Main Station',
+    name: 'Ironspark Terminus',
     description: 'The bustling main railway station, filled with travelers.',
     image: '/images/station.jpg',
-    links: [{ dest: 'default', time: 10 }, { dest: 'backstreets', time: 10 }], // 10 minutes to city, 10 minutes to backstreets
+    links: [{ dest: 'default', time: 10 }], // 10 minutes to city, 10 minutes to backstreets
     activities: [
       {
         name: 'Explore',

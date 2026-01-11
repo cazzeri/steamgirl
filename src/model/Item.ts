@@ -1,0 +1,81 @@
+export type ItemId = string
+
+// Mutable data for an item, used for serialization
+export interface ItemData {
+  id: ItemId
+  number: number
+}
+
+// Static / library information for an item
+export interface ItemDefinition {
+  name: string
+  description?: string
+  image?: string
+  stackable?: boolean
+}
+
+// Item definitions as a plain object for better ergonomics and editing
+// These are the standard items. Others might be added elsewhere
+const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
+  crown: {
+    name: 'Crown',
+    description: 'A currency used throughout the city.',
+    stackable: true,
+  },
+  'test-item': {
+    name: 'Test Item',
+    description: 'A test item for testing purposes.',
+  },
+}
+
+/** Represents a game item instance with mutable state. Definitional data is accessed via the template property. */
+export class Item {
+  id: ItemId
+  number: number
+
+  constructor(id: ItemId, number: number = 1) {
+    this.id = id
+    this.number = number
+  }
+
+  /** Gets the item definition template. */
+  get template(): ItemDefinition {
+    const definition = ITEM_DEFINITIONS[this.id]
+    if (!definition) {
+      throw new Error(`Item definition not found: ${this.id}`)
+    }
+    return definition
+  }
+
+  toJSON(): ItemData {
+    return {
+      id: this.id,
+      number: this.number,
+    }
+  }
+
+  static fromJSON(json: string | ItemData): Item {
+    const data = typeof json === 'string' ? JSON.parse(json) : json
+    const itemId = data.id
+    
+    if (!itemId) {
+      throw new Error('Item.fromJSON requires an id')
+    }
+    
+    // Verify definition exists
+    if (!ITEM_DEFINITIONS[itemId]) {
+      throw new Error(`Item definition not found: ${itemId}`)
+    }
+    
+    // Create item instance with id and number
+    const number = data.number ?? 1
+    const item = new Item(itemId, number)
+    
+    return item
+  }
+}
+
+// Get an item definition by id
+export function getItem(id: ItemId): ItemDefinition | undefined {
+  return ITEM_DEFINITIONS[id]
+}
