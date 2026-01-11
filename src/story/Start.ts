@@ -5,7 +5,7 @@ import { option, p, highlight } from '../model/Format'
 export const startScripts = {
   start: (g: Game) => {
     g.player.name = 'Elise'
-    g.add('Steam hisses as the train grinds to a halt.')
+    g.add('The train exhales a long, wet hiss as it comes to a halt at the platform.')
       .add(p('You have travelled across the whole continent, and are finally here, in the city of ', highlight('Aetheria', '#fbbf24', 'Aetheria: The great steam-powered city of brass and gears, where mechanical marvels and Victorian elegance meet in a symphony of innovation and tradition.'), '.'))
       .add(option('platform', {}, 'Step onto Platform'))
   },
@@ -14,7 +14,7 @@ export const startScripts = {
     g
     .add('You step onto the platform of Ironspark Terminus.')
     .add('Coal smoke curls around your ankles like fingers. The station cathedral looms above: brass vertebrae, glass skin revealing grinding intestines of gear and piston. Somewhere a valve releases steam that tastes faintly of iron and skin.')
-    .add(p('You are here. Alone. The ', highlight('acceptance letter', '#fbbf24', 'You somehow managed to get accepted by the most prestigious University in Aetheria.'), ' pressed against your is your only connection to this place.'))
+    .add('You are here. Alone. The acceptance letter pressed against your is your only connection to this place.')
     .add(option('startExploring', {}, 'Start Exploring'))
     .add(option('tourCity', {}, 'Tour the City'))
   },

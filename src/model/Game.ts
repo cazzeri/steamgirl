@@ -83,11 +83,6 @@ export class Game {
     }
   }
 
-  /** Add a text content item to the current scene. */
-  addText(text: string): void {
-    this.scene.content.push({ type: 'text', text })
-  }
-
   /** Add an option button to the current scene that runs a script. */
   addOption(scriptName: string, params: {} = {}, label?: string): void {
     this.scene.options.push({ type: 'button', script: [scriptName, params], label })
@@ -102,6 +97,7 @@ export class Game {
    */
   add(item: string | SceneContentItem | SceneOptionItem | Array<string | SceneContentItem | SceneOptionItem>): this {
     if (typeof item === 'string') {
+      // This is a normal descriptive paragraph
       this.scene.content.push({ type: 'paragraph', content: [{ type: 'text', text: item }] })
     } else if (Array.isArray(item)) {
       item.forEach(i => this.add(i))
@@ -109,7 +105,7 @@ export class Game {
       // It's a SceneOptionItem
       this.scene.options.push(item)
     } else {
-      // It's a SceneContentItem
+      // It's already a SceneContentItem
       this.scene.content.push(item)
     }
     return this

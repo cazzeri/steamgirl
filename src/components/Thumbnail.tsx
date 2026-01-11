@@ -25,8 +25,8 @@ export function Thumbnail({ image, name, subtitle, onClick, title }: ThumbnailPr
         </div>
       )}
       <div>
-        <p>{name}</p>
-        {subtitle && <p>{subtitle}</p>}
+        <p className="thumbnail-name">{name}</p>
+        {subtitle && <p className="thumbnail-subtitle">{subtitle}</p>}
       </div>
     </button>
   )
