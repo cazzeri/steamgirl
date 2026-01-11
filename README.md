@@ -1,6 +1,6 @@
-# steamgirl
+# SteamGirl
 
-Minimal Vite + TypeScript app using pnpm.
+A Steampunk inspired Life Simulator, Starring a young girl arriving as a student in a big city.
 
 ## Scripts
 - pnpm dev

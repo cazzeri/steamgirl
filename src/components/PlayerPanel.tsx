@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Button } from './Button'
 import { useNavigate } from 'react-router-dom'
 import { useGame } from '../context/GameContext'
@@ -5,9 +6,37 @@ import { Clock } from './Clock'
 import { InventoryView } from './InventoryView'
 import { Game } from '../model/Game'
 
+type TabId = 'Status' | 'Inventory' | 'Quests' | 'Attributes' | 'Settings'
+
 export function PlayerPanel() {
   const navigate = useNavigate()
   const { game, newGame, saveGame, loadGame, setGame } = useGame()
+  const [selectedTab, setSelectedTab] = useState<TabId>('Status')
+
+  const tabs: TabId[] = ['Status', 'Inventory', 'Quests', 'Attributes', 'Settings']
+
+  const renderTabContent = () => {
+    switch (selectedTab) {
+      case 'Status':
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+            <p>Name: {game?.player.name || 'Unknown'}</p>
+            <Clock />
+            {/* Stats will be added here later */}
+          </div>
+        )
+      case 'Inventory':
+        return <InventoryView />
+      case 'Quests':
+        return <p>Quests content will be added later.</p>
+      case 'Attributes':
+        return <p>Attributes content will be added later.</p>
+      case 'Settings':
+        return <p>Settings content will be added later.</p>
+      default:
+        return null
+    }
+  }
 
   return (
     <div className="player-panel panel-elevated" style={{ height: '100%' }}>
@@ -28,13 +57,24 @@ export function PlayerPanel() {
         </div>
       </div>
 
-      <main className="game-canvas canvas-framed" >
-        <div style={{ padding: 'var(--space-md)', display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
-          <p>Name: {game?.player.name || 'Unknown'}</p>
-          <Clock />
-          <InventoryView />
+      <div className="game-canvas canvas-framed" >
+        <div className="panel-tabs">
+          <div className="tabs-header">
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                className={`tab-button ${selectedTab === tab ? 'active' : ''}`}
+                onClick={() => setSelectedTab(tab)}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+          <div className="tabs-content">
+            {renderTabContent()}
+          </div>
         </div>
-      </main>
+      </div>
 
       <div className="dev-controls">
         <Button onClick={() => { newGame() }}>

@@ -189,8 +189,56 @@ p {
 }
 
 .game-canvas {
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.panel-tabs {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.tabs-header {
+  display: flex;
+  gap: var(--space-xs);
+  padding: var(--space-xs);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-panel-soft);
+}
+
+.tab-button {
+  flex: 1;
+  padding: var(--space-xs);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-button:hover {
+  background: var(--bg-panel-soft);
+  color: var(--text-main);
+  border-color: var(--border-subtle);
+}
+
+.tab-button.active {
+  background: var(--bg-panel);
+  color: var(--text-main);
+  border-color: var(--border-main);
+}
+
+.tabs-content {
+  flex: 1;
+  padding: var(--space-md);
+  overflow-y: auto;
 }
 
 .dev-controls {

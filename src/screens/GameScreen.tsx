@@ -12,9 +12,9 @@ export function GameScreen() {
   return (
     <div className="game-screen">
       <PlayerPanel />
-      <div style={{ flex: 1, height: '100%' }}>
+      <main style={{ flex: 1, height: '100%' }}>
         <LocationView location={game.location} />
-      </div>
+      </main>
     </div>
   )
 }
