@@ -5,10 +5,17 @@ import { option } from '../model/Format'
 export const startScripts = {
   start: (g: Game) => {
     g.player.name = 'Elise'
-    g.add('Steam hisses as the train grinds to a halt. You step onto the platform of Ironspark Terminus. You are finally here, in the city of Aetheria.')
-      .add('The air is thick with the smell of coal and oil. Through the steam, you can see the grand station—a marvel of engineering with gears visible through glass panels in the walls.')
-      .add(option('startExploring', {}, 'Start Exploring'))
-      .add(option('tourCity', {}, 'Tour the City'))
+    g.add('Steam hisses as the train grinds to a halt. You step onto the platform of Ironspark Terminus.')
+      .add('You have travelled across the whole continent, and are finally here, in the city of Aetheria.')
+      .add(option('platform', {}, 'Step onto Platform'))
+  },
+
+  platform: (g: Game) => {
+    g
+    .add('Coal smoke curls around your ankles like fingers. The station cathedral looms above: brass vertebrae, glass skin revealing grinding intestines of gear and piston. Somewhere a valve releases steam that tastes faintly of iron and skin.')
+    .add('You are here. Alone. The acceptance letter pressed against your is your only connection to this place.')
+    .add(option('startExploring', {}, 'Start Exploring'))
+    .add(option('tourCity', {}, 'Tour the City'))
   },
   
   startExploring: (g: Game) => {
@@ -38,13 +45,14 @@ export const startScripts = {
   tourMarket: (g: Game) => {
     g.run('go', { location: 'market', time: 15 })
       .add('The Market pulses with energy and excitement. Vendors display exotic mechanical trinkets, glowing brass devices, and intricate clockwork wonders. The air is filled with the sounds of haggling, the clinking of gears, and the hiss of steam. Every stall promises something fascinating—from precision tools to mysterious contraptions. This is where adventure and opportunity meet.')
+      .add('The market throbs. Vendors call in low, hungry voices. Brass toys whir and caress the air; clockwork serpents coil around wrists for sale. Fingers brush you as you pass — accidental, deliberate, promising.')
       .add(option('tourBackstreets', {}, 'Continue the Tour'))
   },
   
   tourBackstreets: (g: Game) => {
     g.run('go', { location: 'backstreets', time: 15 })
-      .add('The tour ends here, where your room awaits. These winding alleys hold secrets and shadows, but also a sense of home. This is where you\'ll return after your adventures, your base in this vast city. The air is thick with the smell of coal and oil, and the sound of steam engines echoes in the distance.')
-    // Tour complete - they can now explore from backstreets
+    .add('The alleys close in, narrow and intimate. Gas lamps flicker like dying heartbeats. Somewhere above, gears moan. Somewhere below, something else answers.')
+    .add('Your room waits on the third floor')    // Tour complete - they can now explore from backstreets
   },
 }
 
