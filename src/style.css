@@ -658,7 +658,7 @@ p {
 /* Card component (playing card style) */
 .card-component {
   width: 9rem;
-  height: 12rem;
+  height: 9rem;
   background: var(--bg-panel);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
@@ -695,7 +695,7 @@ p {
 
 .card-title {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.75rem;
   color: var(--text-main);
   font-weight: 600;
   text-align: center;
@@ -713,7 +713,7 @@ p {
 
 .card-description {
   margin: 0;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
   text-align: left;
   overflow-y: auto;

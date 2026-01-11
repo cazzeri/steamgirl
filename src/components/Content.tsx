@@ -25,9 +25,9 @@ export function renderScene(scene: SceneData): ReactNode {
 function ContentItem({ item }: { item: SceneContentItem }): ReactNode {
   if (item.type === 'text') {
     return (
-      <span style={item.color ? { color: item.color } : undefined}>
+      <p style={item.color ? { color: item.color } : undefined}>
         {item.text}
-      </span>
+      </p>
     )
   }
 
