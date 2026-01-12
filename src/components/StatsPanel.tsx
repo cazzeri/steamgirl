@@ -1,5 +1,5 @@
 import { useGame } from '../context/GameContext'
-import { STAT_NAMES } from '../model/Stats'
+import { STAT_NAMES, MAIN_STAT_INFO } from '../model/Stats'
 
 export function StatsPanel() {
   const { game } = useGame()
@@ -20,9 +20,6 @@ export function StatsPanel() {
           const statValue = game.player.stats.get(statName) || 0
           const baseValue = game.player.basestats.get(statName) || 0
           const modifier = statValue - baseValue
-          const modifierText = modifier !== 0 
-            ? ` (${modifier > 0 ? '+' : ''}${modifier})` 
-            : ''
           
           // Calculate percentages for the progress bar segments
           const basePercent = Math.max(0, Math.min(100, baseValue))
@@ -49,10 +46,14 @@ export function StatsPanel() {
                 alignItems: 'baseline',
                 marginBottom: 'var(--space-xs)'
               }}>
-                <span style={{ 
-                  fontWeight: 500,
-                  color: 'var(--text-main)'
-                }}>
+                <span 
+                  style={{ 
+                    fontWeight: 500,
+                    color: 'var(--text-main)',
+                    cursor: 'help'
+                  }}
+                  title={MAIN_STAT_INFO[statName].description}
+                >
                   {statName}
                 </span>
                 <span style={{ 
