@@ -5,6 +5,7 @@ import './style.css'
 import './story/Utility'
 import './story/Start'
 import './story/Effects'
+import './story/Lodgings' // Register lodgings scripts
 
 const rootElement = document.getElementById('root')
 

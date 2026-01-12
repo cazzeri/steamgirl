@@ -99,15 +99,15 @@ export const lodgingsScripts = {
     g.run('timeLapse', { minutes: 2 })
     g.add('He leads you down the hallway. "This is the bathroom - it\'s shared with the other tenants. Keep it clean, won\'t you?"')
     g.run('move', { location: 'bathroom'})
-    g.add(option('enterLodgingsPhase3', {}, 'Next'))
+    g.add(option('finishIntroduction', {}, 'Next'))
   },
 
-  enterLodgingsPhase3: (g: Game, _params: {}) => {
+  finishIntroduction: (g: Game, _params: {}) => {
     // Phase 3: Landlord hands over key
     const bedroomLocation = g.getLocation('bedroom')
     g.run('timeLapse', { minutes: 3 })
     g.run('move', { location: 'bedroom' })
-    g.add('You follow him to your room. He produces a brass key from his pocket and hands it to you. "Here\'s your key. Welcome home."')
+    g.add('You follow your landlord to your room. He produces a brass key from his pocket and hands it to you. "Here\'s your key. Welcome home."')
     g.run('gainItem', { item: 'room-key', number: 1 , text: 'You now have a key to your room.'})
     
     // Mark bedroom as visited to prevent this sequence from running again

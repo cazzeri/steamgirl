@@ -4,6 +4,7 @@ import { option, p, highlight } from '../model/Format'
 import type { CardDefinition } from '../model/Card'
 import { registerCardDefinition } from '../model/Card'
 import '../story/Effects' // Register effect definitions
+import '../story/Lodgings' // Register lodgings scripts
 
 export const startScripts = {
   init: (g: Game) => {
@@ -24,6 +25,7 @@ export const startScripts = {
     g.add('The train exhales a long, wet hiss as it comes to a halt at the platform.')
       .add(p('You have travelled across the whole continent, and are finally here, in the city of ', highlight('Aetheria', '#fbbf24', 'Aetheria: The great steam-powered city of brass and gears, where mechanical marvels and Victorian elegance meet in a symphony of innovation and tradition.'), '.'))
       .add(option('startPlatform', {}, 'Step onto Platform'))
+      .add(option('finishIntroduction', {}, 'Skip Intro'))
   },
 
   startPlatform: (g: Game) => {
