@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { Game } from './Game'
 import { Item } from './Item'
+import '../story/Effects' // Register effect definitions
 
 describe('Game', () => {
   it('should create a new Game', () => {
@@ -88,5 +89,32 @@ describe('Game', () => {
     expect(game3.player.inventory[0].number).toBe(1)
     expect(game3.player.inventory[1].id).toBe('crown')
     expect(game3.player.inventory[1].number).toBe(10)
+  })
+
+  it('should give player Intoxicated effect when drinking sweet wine', () => {
+    const game = new Game()
+    
+    // Find sweet wine in inventory (player starts with 3)
+    const wineItem = game.player.inventory.find(item => item.id === 'sweet-wine')
+    expect(wineItem).toBeDefined()
+    expect(wineItem?.number).toBeGreaterThan(0)
+    
+    // Get the item definition and call onConsume
+    const wineDef = wineItem!.template
+    expect(wineDef.onConsume).toBeDefined()
+    
+    // Remove the item from inventory first (as the UI does)
+    game.player.removeItem('sweet-wine', 1)
+    
+    // Call the onConsume script
+    wineDef.onConsume!(game, {})
+    
+    // Check that player has the intoxicated effect
+    const intoxicatedCard = game.player.cards.find(card => card.id === 'intoxicated' && card.type === 'Effect')
+    expect(intoxicatedCard).toBeDefined()
+    expect(intoxicatedCard?.type).toBe('Effect')
+    
+    // Check that the alcohol value is 60
+    expect(intoxicatedCard?.alcohol).toBe(60)
   })
 })
