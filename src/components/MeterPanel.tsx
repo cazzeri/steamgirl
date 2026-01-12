@@ -10,19 +10,28 @@ export function MeterPanel() {
     return null
   }
 
-  // Filter to only show non-zero meters
-  const nonZeroMeters = METER_NAMES.filter(meterName => {
+  // Filter to show meters with value > 0 or meters with alwaysDisplay flag
+  const visibleMeters = METER_NAMES.filter(meterName => {
     const value = game.player.stats.get(meterName) || 0
-    return value > 0
+    const meterInfo = METER_INFO[meterName]
+    return value > 0 || meterInfo.alwaysDisplay === true
   })
 
-  if (nonZeroMeters.length === 0) {
+  if (visibleMeters.length === 0) {
     return null
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
-      {nonZeroMeters.map((meterName) => {
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      gap: 'var(--space-xs)',
+      border: '1px solid var(--border-subtle)',
+      borderRadius: 'var(--radius-sm)',
+      padding: 'var(--space-xs)',
+      background: 'var(--bg-panel-soft)'
+    }}>
+      {visibleMeters.map((meterName) => {
         const meterValue = game.player.stats.get(meterName) || 0
         const meterInfo = METER_INFO[meterName]
         
@@ -35,10 +44,6 @@ export function MeterPanel() {
               display: 'flex',
               alignItems: 'center',
               gap: 'var(--space-sm)',
-              padding: 'var(--space-xs)',
-              background: 'var(--bg-panel-soft)',
-              borderRadius: 'var(--radius-sm)',
-              border: '1px solid var(--border-subtle)'
             }}
           >
             {/* Meter name on the left */}

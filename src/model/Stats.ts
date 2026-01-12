@@ -45,6 +45,7 @@ export interface MeterInfo {
   description: string
   gainColor: string // Color to use when displaying meter increases
   lossColor: string // Color to use when displaying meter decreases
+  alwaysDisplay?: boolean // If true, display the meter even when value is 0
 }
 
 /**
@@ -119,6 +120,7 @@ export const METER_INFO: Record<MeterName, MeterInfo> = {
     description: 'Your current energy level. Affects your ability to perform physical activities.',
     gainColor: '#10b981', // Green for energy gain
     lossColor: '#ef4444', // Red for energy loss
+    alwaysDisplay: true, // Always show energy meter
   },
   Arousal: {
     description: 'Your level of physical arousal and excitement.',
@@ -129,6 +131,7 @@ export const METER_INFO: Record<MeterName, MeterInfo> = {
     description: 'Your ability to remain calm and collected in stressful situations.',
     gainColor: '#3b82f6', // Blue for composure gain
     lossColor: '#f59e0b', // Amber for composure loss
+    alwaysDisplay: true, // Always show composure meter
   },
   Stress: {
     description: 'Your current stress level. High stress can affect your performance.',
@@ -144,6 +147,7 @@ export const METER_INFO: Record<MeterName, MeterInfo> = {
     description: 'Your overall emotional state and mood.',
     gainColor: '#fbbf24', // Yellow/amber for mood gain
     lossColor: '#6366f1', // Indigo for mood loss
+    alwaysDisplay: true, // Always show mood meter
   },
 }
 

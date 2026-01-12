@@ -23,7 +23,6 @@ export function PlayerPanel() {
         const effectCards = game?.player.cards.filter(card => card.type === 'Effect') || []
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
-            <p>Name: {game?.player.name || 'Unknown'}</p>
             <Clock />
             <StatsPanel />
             
@@ -70,7 +69,7 @@ export function PlayerPanel() {
 
   return (
     <div className="player-panel panel-elevated" style={{ height: '100%' }}>
-      <div className="avatar-container">
+      <div className="avatar-container" style={{ position: 'relative' }}>
         <div className="avatar-frame">
           <div className="rivet rivet-tl"></div>
           <div className="rivet rivet-tr"></div>
@@ -84,6 +83,17 @@ export function PlayerPanel() {
               alt="Player Avatar"
             />
           </div>
+        </div>
+        {/* Player name overlay in bottom right */}
+        <div style={{
+          position: 'absolute',
+          bottom: 0,
+          right:20,
+          color: 'var(--text-main)',
+          fontWeight: 500,
+          pointerEvents: 'none'
+        }}>
+          <h3>{game?.player.name || 'Unknown'}</h3>
         </div>
       </div>
 

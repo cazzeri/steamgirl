@@ -138,7 +138,7 @@ export const LOCATION_DEFINITIONS: Record<LocationId, LocationDefinition> = {
           const lakeLocation = g.locations.get('lake')
           const isLakeDiscovered = lakeLocation ? lakeLocation.discovered : false
           
-          // Random encounters for the University
+          // Random encounters for the University grounds (outisde)
           const encounters = [
             'You wander through the grand halls, admiring the brass architectural details and mechanical displays. Students hurry past, carrying books and small mechanical devices.',
             'A professor with mechanical spectacles adjusts the gears on a teaching automaton. The device clicks and whirs as it demonstrates a complex mechanical principle.',

@@ -10,7 +10,7 @@ export function StatsPanel() {
   }
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
       <div style={{ 
         display: 'grid', 
         gridTemplateColumns: '1fr 1fr 1fr', 
