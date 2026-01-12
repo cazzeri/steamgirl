@@ -3,7 +3,7 @@
  * Stats are 0-100 values that represent character attributes.
  */
 
-export type StatName = 
+export type MainStatName = 
   | 'Agility'
   | 'Perception'
   | 'Wits'
@@ -11,18 +11,29 @@ export type StatName =
   | 'Willpower'
   | 'Strength'
 
+export type SkillName =
+  | 'Dancing'
+  | 'Fitness'
+  | 'Etiquette'
+  | 'Mechanics'
+  | 'Flirting'
+  | 'Haggling'
+
+export type StatName = MainStatName | SkillName
+
 /**
  * Information about a stat, including description and other metadata.
  */
 export interface StatInfo {
   description: string
+  basedOn?: MainStatName // For skills, indicates which main stat the skill is based on
   // Additional fields can be added here later
 }
 
 /**
- * Map of all stat names to their information.
+ * Map of all main stat names to their information.
  */
-export const MAIN_STAT_INFO: Record<StatName, StatInfo> = {
+export const MAIN_STAT_INFO: Record<MainStatName, StatInfo> = {
   Agility: {
     description: 'Your speed, reflexes, and physical coordination.',
   },
@@ -44,9 +55,44 @@ export const MAIN_STAT_INFO: Record<StatName, StatInfo> = {
 }
 
 /**
- * List of all stat names in the game (for iteration).
+ * Map of all skill names to their information.
  */
-export const STAT_NAMES: StatName[] = Object.keys(MAIN_STAT_INFO) as StatName[]
+export const SKILL_INFO: Record<SkillName, StatInfo> = {
+  Dancing: {
+    description: 'Your ability to move gracefully and perform dance moves.',
+    basedOn: 'Agility',
+  },
+  Fitness: {
+    description: 'Your overall physical fitness and endurance.',
+    basedOn: 'Strength',
+  },
+  Etiquette: {
+    description: 'Your knowledge of social norms and proper behavior in high society.',
+    basedOn: 'Charm',
+  },
+  Mechanics: {
+    description: 'Your understanding of mechanical devices and steam-powered technology.',
+    basedOn: 'Wits',
+  },
+  Flirting: {
+    description: 'Your ability to charm and attract romantic interest.',
+    basedOn: 'Charm',
+  },
+  Haggling: {
+    description: 'Your skill at negotiating prices and getting better deals.',
+    basedOn: 'Charm',
+  },
+}
+
+/**
+ * List of all main stat names (for initialization).
+ */
+export const STAT_NAMES: MainStatName[] = Object.keys(MAIN_STAT_INFO) as MainStatName[]
+
+/**
+ * List of all skill names (for iteration).
+ */
+export const SKILL_NAMES: SkillName[] = Object.keys(SKILL_INFO) as SkillName[]
 
 /**
  * Type for stat modifiers - a function that modifies stats.

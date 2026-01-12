@@ -52,11 +52,11 @@ describe('Player', () => {
   it('should handle missing inventory in deserialization (backwards compatibility)', () => {
     const playerData: PlayerData = {
       name: 'TestPlayer',
-      stats: {
-        agility: 1,
-        brawn: 2,
-        wits: 3,
-        charm: 4,
+      basestats: {
+        Agility: 1,
+        Strength: 2,
+        Wits: 3,
+        Charm: 4,
       },
       inventory: [],
       cards: []

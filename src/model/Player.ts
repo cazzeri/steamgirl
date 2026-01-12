@@ -1,6 +1,6 @@
 import { Item, type ItemData, ensureItem } from './Item'
 import { Card, type CardData } from './Card'
-import { type StatName, STAT_NAMES } from './Stats'
+import { type StatName, type SkillName, STAT_NAMES, SKILL_INFO } from './Stats'
 
 export type ItemSpec = string | Item
 
@@ -196,6 +196,58 @@ export class Player {
     this.stats.forEach((value, statName) => {
       this.stats.set(statName, Math.max(0, Math.min(100, value)))
     })
+  }
+
+  /**
+   * Performs a skill test by rolling d100 and comparing against base stat + skill - difficulty.
+   * @param statName - The stat or skill to test (if a skill, uses its basedOn main stat + skill value)
+   * @param difficulty - The difficulty modifier (positive makes it harder, negative makes it easier)
+   * @returns true if the test succeeds, false otherwise
+   * 
+   * Success conditions:
+   * - Roll of 1 always succeeds
+   * - Roll of 100 always fails
+   * - Otherwise, succeeds if roll < (base stat + skill - difficulty)
+   */
+  skillTest(statName: StatName, difficulty: number = 0): boolean {
+    // Roll d100 (1-100)
+    const roll = Math.floor(Math.random() * 100) + 1
+
+    // Special cases: 1 always succeeds, 100 always fails
+    if (roll === 1) {
+      return true
+    }
+    if (roll === 100) {
+      return false
+    }
+
+    // Determine base stat and skill values
+    let baseStat: number
+    let skill: number
+
+    // Check if statName is a skill by checking if it exists in SKILL_INFO
+    if (statName in SKILL_INFO) {
+      // It's a skill: use the basedOn main stat + the skill value
+      const skillInfo = SKILL_INFO[statName as SkillName]
+      if (skillInfo.basedOn) {
+        baseStat = this.basestats.get(skillInfo.basedOn) || 0
+        skill = this.basestats.get(statName) || 0
+      } else {
+        // Skill without basedOn (shouldn't happen, but handle gracefully)
+        baseStat = this.basestats.get(statName) || 0
+        skill = 0
+      }
+    } else {
+      // It's a main stat: use the stat value, skill is 0
+      baseStat = this.basestats.get(statName) || 0
+      skill = 0
+    }
+
+    // Calculate success threshold: base stat + skill - difficulty
+    const threshold = baseStat + skill - difficulty
+
+    // Succeed if roll < threshold
+    return roll < threshold
   }
 }
 
