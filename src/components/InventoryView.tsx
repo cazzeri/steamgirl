@@ -46,7 +46,7 @@ export function InventoryView() {
             <p>Quantity: {selectedItem.number}</p>
           )}
           {selectedItem.template.description && (
-            <p>{selectedItem.template.description}</p>
+            <p style={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}>{selectedItem.template.description}</p>
           )}
           <div style={{ display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
             {selectedItem.template.onExamine && (

@@ -8,14 +8,14 @@ import { Game } from '../model/Game'
 import { Card } from './Card'
 import { StatsPanel } from './StatsPanel'
 
-type TabId = 'Status' | 'Inventory' | 'Quests' | 'Attributes' | 'Settings'
+type TabId = 'Status' | 'Inventory' | 'Quests' | 'Skills' | 'Settings'
 
 export function PlayerPanel() {
   const navigate = useNavigate()
   const { game, newGame, saveGame, loadGame, setGame } = useGame()
   const [selectedTab, setSelectedTab] = useState<TabId>('Status')
 
-  const tabs: TabId[] = ['Status', 'Inventory', 'Quests', 'Attributes', 'Settings']
+  const tabs: TabId[] = ['Status', 'Inventory', 'Quests', 'Skills', 'Settings']
 
   const renderTabContent = () => {
     switch (selectedTab) {
@@ -59,8 +59,8 @@ export function PlayerPanel() {
             ))}
           </div>
         )
-      case 'Attributes':
-        return <p>Attributes content will be added later.</p>
+      case 'Skills':
+        return <p>Skills content will be added later.</p>
       case 'Settings':
         return <p>Settings content will be added later.</p>
       default:

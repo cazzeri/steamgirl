@@ -48,7 +48,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const loadGame = (): boolean => {
     try {
-      const saved = localStorage.getItem('gameSaveManual')
+      // Try to load from autosave first, then manual save
+      let saved = localStorage.getItem('gameSave')
+      if (!saved) {
+        saved = localStorage.getItem('gameSaveManual')
+      }
       if (!saved) {
         return false
       }

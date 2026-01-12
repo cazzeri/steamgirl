@@ -110,8 +110,7 @@ const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
         game.run('addStat', { 
           stat: statName, 
           change: 5, 
-          chance: 0.5,
-          hidden: false
+          chance: 0.5
         })
       })
     },
