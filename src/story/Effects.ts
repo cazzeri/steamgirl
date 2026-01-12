@@ -3,6 +3,7 @@ import type { CardDefinition } from '../model/Card'
 import type { Card } from '../model/Card'
 import { registerCardDefinition } from '../model/Card'
 import type { StatName } from '../model/Stats'
+import type { Player } from '../model/Player'
 
 export const intoxicatedEffect: CardDefinition = {
   name: 'Intoxicated',
@@ -34,10 +35,38 @@ export const intoxicatedEffect: CardDefinition = {
       }
     }
   },
-  calcStats: (_game: Game, _card: Card, stats: Map<StatName, number>) => {
-    // Intoxicated reduces Agility by 20
-    const currentAgility = stats.get('Agility') || 0
-    stats.set('Agility', currentAgility - 20)
+  calcStats: (player: Player, card: Card, _stats: Map<StatName, number>) => {
+    const alcohol = (card.alcohol as number) || 0
+    
+    // Give +5 Charm bonus if alcohol is low (< 100)
+    if (alcohol < 100) {
+      player.addStat('Charm', 5)
+    }
+    
+    // Apply penalties based on alcohol level
+    // Base penalty to Agility (scales with alcohol)
+    const agilityPenalty = Math.floor(alcohol / 10) // -1 per 10 alcohol, up to -10 at 100
+    if (agilityPenalty > 0) {
+      player.addStat('Agility', -agilityPenalty)
+    }
+    
+    // Perception penalty starts at alcohol >= 30
+    if (alcohol >= 30) {
+      const perceptionPenalty = Math.floor((alcohol - 30) / 15) + 1 // -1 at 30, -2 at 45, etc.
+      player.addStat('Perception', -perceptionPenalty)
+    }
+    
+    // Wits penalty starts at alcohol >= 60
+    if (alcohol >= 60) {
+      const witsPenalty = Math.floor((alcohol - 60) / 20) + 1 // -1 at 60, -2 at 80, etc.
+      player.addStat('Wits', -witsPenalty)
+    }
+    
+    // Charm penalty starts at alcohol >= 100 (overrides the bonus)
+    if (alcohol >= 100) {
+      const charmPenalty = Math.floor((alcohol - 100) / 25) + 1 // -1 at 100, -2 at 125, etc.
+      player.addStat('Charm', -charmPenalty)
+    }
   },
 }
 

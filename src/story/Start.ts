@@ -14,9 +14,10 @@ export const startScripts = {
     // Set base stats to 30
     g.player.basestats.set('Agility', 30)
     g.player.basestats.set('Perception', 30)
-    g.player.basestats.set('Brawn', 30)
     g.player.basestats.set('Wits', 30)
     g.player.basestats.set('Charm', 30)
+    g.player.basestats.set('Willpower', 30)
+    g.player.basestats.set('Strength', 30)
     
     // Recalculate stats after setting base stats
     g.run('calcStats', {})

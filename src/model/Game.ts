@@ -192,7 +192,7 @@ export class Game {
    * This should be called whenever stats need to be recalculated (e.g., when items/cards change).
    */
   calcStats(): void {
-    this.player.calcStats(this)
+    this.player.calcStats()
   }
 
   /** Clear the current scene (resets content and options). */

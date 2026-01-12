@@ -55,6 +55,9 @@ export const utilityScripts = {
     
     // Add item to inventory
     game.player.addItem(itemId, number)
+    
+    // Recalculate stats after adding item (in case item has stat modifiers)
+    game.calcStats()
   },
   
   // Explore the current location - shows a random encounter

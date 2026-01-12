@@ -6,6 +6,7 @@ import { Clock } from './Clock'
 import { InventoryView } from './InventoryView'
 import { Game } from '../model/Game'
 import { Card } from './Card'
+import { StatsPanel } from './StatsPanel'
 
 type TabId = 'Status' | 'Inventory' | 'Quests' | 'Attributes' | 'Settings'
 
@@ -24,6 +25,8 @@ export function PlayerPanel() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
             <p>Name: {game?.player.name || 'Unknown'}</p>
             <Clock />
+            <StatsPanel />
+            
             {effectCards.length > 0 && (
               <div>
                 <h4 style={{ marginBottom: 'var(--space-sm)' }}>Effects</h4>
@@ -40,7 +43,6 @@ export function PlayerPanel() {
                 </div>
               </div>
             )}
-            {/* Stats will be added here later */}
           </div>
         )
       case 'Inventory':

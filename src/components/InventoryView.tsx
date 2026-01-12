@@ -79,6 +79,8 @@ export function InventoryView() {
                     game.clearScene()
                     // Remove the item from inventory first
                     game.player.removeItem(selectedItem.id, 1)
+                    // Recalculate stats after removing item (in case item had stat modifiers)
+                    game.calcStats()
                     // Then call the onConsume script
                     itemDef.onConsume(game, {})
                     // Run afterUpdate scripts for all cards

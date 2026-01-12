@@ -1,7 +1,6 @@
 import { Item, type ItemData, ensureItem } from './Item'
 import { Card, type CardData } from './Card'
 import { type StatName, STAT_NAMES } from './Stats'
-import type { Game } from './Game'
 
 export type ItemSpec = string | Item
 
@@ -129,11 +128,22 @@ export class Player {
   }
 
   /**
+   * Add a bonus/penalty to a stat. The stat can go outside 0-100 during calculation,
+   * but will be bounded when calcStats completes.
+   * @param statName - The stat to modify
+   * @param bonus - The amount to add (can be negative for penalties)
+   */
+  addStat(statName: StatName, bonus: number): void {
+    const currentValue = this.stats.get(statName) || 0
+    this.stats.set(statName, currentValue + bonus)
+  }
+
+  /**
    * Calculate stats by copying basestats to stats, then applying modifiers from active Items and Cards.
    * This should be called whenever stats need to be recalculated (e.g., when items/cards change).
-   * Note: This method needs access to Game for the calcStats callbacks, so it takes game as a parameter.
+   * Stats are bounded to 0-100 only after all modifiers have been applied.
    */
-  calcStats(game: Game): void {
+  calcStats(): void {
     // Copy basestats to stats
     this.stats.clear()
     this.basestats.forEach((value, statName) => {
@@ -144,7 +154,7 @@ export class Player {
     this.inventory.forEach(item => {
       const itemDef = item.template
       if (itemDef.calcStats) {
-        itemDef.calcStats(game, item, this.stats)
+        itemDef.calcStats(this, item, this.stats)
       }
     })
 
@@ -152,11 +162,11 @@ export class Player {
     this.cards.forEach(card => {
       const cardDef = card.template
       if (cardDef.calcStats) {
-        cardDef.calcStats(game, card, this.stats)
+        cardDef.calcStats(this, card, this.stats)
       }
     })
 
-    // Clamp all stats to 0-100 range
+    // Clamp all stats to 0-100 range after all modifiers have been applied
     this.stats.forEach((value, statName) => {
       this.stats.set(statName, Math.max(0, Math.min(100, value)))
     })

@@ -6,9 +6,10 @@
 export type StatName = 
   | 'Agility'
   | 'Perception'
-  | 'Brawn'
   | 'Wits'
   | 'Charm'
+  | 'Willpower'
+  | 'Strength'
 
 /**
  * List of all stat names in the game.
@@ -16,9 +17,10 @@ export type StatName =
 export const STAT_NAMES: StatName[] = [
   'Agility',
   'Perception',
-  'Brawn',
   'Wits',
   'Charm',
+  'Willpower',
+  'Strength',
 ]
 
 /**
