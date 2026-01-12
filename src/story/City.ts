@@ -1,5 +1,8 @@
 import { Game } from '../model/Game'
 import type { LocationId, LocationDefinition } from '../model/Location'
+import { option } from '../model/Format'
+import { makeScripts } from '../model/Scripts'
+import { Item } from '../model/Item'
 
 // Location definitions for the city of Aetheria
 // These are the standard locations. Others might be added elsewhere
@@ -136,5 +139,75 @@ export const LOCATION_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     image: '/images/market.jpg',
     description: 'A bustling marketplace filled with exotic goods and mechanical wonders.',
     links: [{ dest: 'lake', time: 5 }, { dest: 'backstreets', time: 5 }, { dest: 'default', time: 3 }], // 5 minutes to lake, 5 minutes to backstreets, 3 minutes to city centre
+    activities: [
+      {
+        name: 'Lucky Dip',
+        script: (g: Game, _params: {}) => {
+          // Check if player has at least 5 crowns
+          const crownItem = g.player.inventory.find(item => item.id === 'crown')
+          const crownCount = crownItem?.number || 0
+          
+          g.add('A vendor at a colourful stall beckons you over.')
+          g.add('"Try your luck at the Lucky Dip!" she calls, gesturing to a large brass barrel filled with mysterious items. "Just 5 Krona for a chance at something special!"')
+          
+          if (crownCount >= 5) {
+            g.add(option('luckyDipPay', {}, 'Pay 5 Krona'))
+            g.add(option('luckyDipQuit', {}, 'Walk Away'))
+          } else {
+            g.add('Sadly, you don\'t have the coins to play this game. The vendor looks disappointed but smiles understandingly.')
+            g.add(option('luckyDipQuit', {}, 'Walk Away'))
+          }
+        },
+      },
+    ],
   },
 }
+
+// Market scripts
+export const marketScripts = {
+  luckyDipPay: (g: Game, _params: {}) => {
+    // Check if player still has enough crowns (in case they spent some)
+    const crownItem = g.player.inventory.find(item => item.id === 'crown')
+    const crownCount = crownItem?.number || 0
+    
+    if (crownCount < 5) {
+      g.add('You check your pockets, but you don\'t have enough Krona. The vendor looks disappointed.')
+      return
+    }
+    
+    // Deduct 5 crowns
+    g.player.removeItem('crown', 5)
+    
+    // List of possible items from the lucky dip
+    const luckyDipItems: Array<{ id: string; number?: number }> = [
+      { id: 'brass-trinket' },
+      { id: 'clockwork-toy' },
+      { id: 'steam-whistle' },
+      { id: 'sweet-wine' },
+      { id: 'lucky-charm' },
+      { id: 'mysterious-gear' },
+      { id: 'glowing-crystal' },
+      { id: 'crown', number: 20 },
+    ]
+    
+    // Select a random item
+    const selectedItemData = luckyDipItems[Math.floor(Math.random() * luckyDipItems.length)]
+    const quantity = selectedItemData.number ?? 1
+    
+    // Create Item object to get the proper display name
+    const item = new Item(selectedItemData.id, quantity)
+    const displayName = item.getAName()
+    
+    // Display the result
+    g.add('You hand over 5 Krona to the vendor, who smiles and reaches into the brass barrel.')
+    g.add('After a moment of rummaging, she pulls out a wrapped item and hands it to you.')
+    g.run('gainItem', { text: `You received: ${displayName}!`, item: selectedItemData.id, number: quantity })
+  },
+  
+  luckyDipQuit: (g: Game, _params: {}) => {
+    g.add('You politely decline and walk away from the stall. The vendor waves cheerfully as you leave.')
+  },
+}
+
+// Register market scripts when module loads
+makeScripts(marketScripts)

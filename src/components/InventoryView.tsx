@@ -3,6 +3,7 @@ import { useGame } from '../context/GameContext'
 import { ItemView } from './ItemView'
 import { Button } from './Button'
 import { Game } from '../model/Game'
+import { capitalise } from '../model/Text'
 
 export function InventoryView() {
   const { game, setGame } = useGame()
@@ -40,7 +41,7 @@ export function InventoryView() {
       </div>
       {selectedItem && (
         <div className="inventory-details">
-          <h4>{selectedItem.template.name}</h4>
+          <h4>{capitalise(selectedItem.template.name)}</h4>
           {selectedItem.template.stackable && selectedItem.number > 1 && (
             <p>Quantity: {selectedItem.number}</p>
           )}

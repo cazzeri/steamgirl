@@ -1,6 +1,7 @@
 import { Game } from './Game'
 import type { Script } from './Scripts'
 import { consumeAlcohol } from '../story/Effects'
+import { capitalise } from './Text'
 
 export type ItemId = string
 
@@ -29,19 +30,19 @@ const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
     stackable: true,
   },
   'pocket-watch': {
-    name: 'Pocket Watch',
+    name: 'pocket watch',
     description: 'A fine brass pocket watch with intricate gears.',
   },
   'room-key': {
-    name: 'Room Key',
+    name: 'room key',
     description: 'A brass key to your lodgings in the backstreets.',
   },
   'test-item': {
-    name: 'Test Item',
+    name: 'test item',
     description: 'A test item for testing purposes.',
   },
   'sweet-wine': {
-    name: 'Sweet Wine',
+    name: 'sweet wine',
     stackable: true,
     description: 'A bottle of sweet wine with an intoxicating aroma.',
     onConsume: (game: Game, _params: {}) => {
@@ -49,7 +50,7 @@ const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
     },
   },
   'acceptance-letter': {
-    name: 'Acceptance Letter',
+    name: 'acceptance letter',
     description: 'A formal letter with an official seal.',
     onExamine: (game: Game, _params: {}) => {
       game.clearScene()
@@ -68,6 +69,33 @@ const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
         'The Academy Board of Admissions'
       ])
     },
+  },
+  'brass-trinket': {
+    name: 'brass t rinket',
+    description: 'A small, intricate brass trinket with delicate gears that catch the light.',
+    stackable: true,
+  },
+  'clockwork-toy': {
+    name: 'clockwork toy',
+    description: 'A charming mechanical toy that moves when wound. The gears inside click and whir with precision.',
+  },
+  'steam-whistle': {
+    name: 'steam whistle',
+    description: 'A small brass whistle that emits a high-pitched steam-powered sound when blown.',
+  },
+  'lucky-charm': {
+    name: 'lucky charm',
+    description: 'A small mechanical charm made of brass gears and cogs. It feels warm to the touch.',
+  },
+  'mysterious-gear': {
+    name: 'mysterious gear',
+    description: 'An unusual gear of unknown origin. It seems to be part of something larger.',
+    stackable: true,
+  },
+  'glowing-crystal': {
+    name: 'glowing crystal',
+    stackable: true,
+    description: 'A crystal that glows with a soft inner light, wrapped in brass wire and gears.',
   },
 }
 
@@ -88,6 +116,26 @@ export class Item {
       throw new Error(`Item definition not found: ${this.id}`)
     }
     return definition
+  }
+
+  /**
+   * Gets a display name with appropriate prefix (number for stackable items, "a"/"an" for others).
+   * Returns capitalized names. Examples: "20 Krona", "a Clockwork Toy", "3 Sweet Wine", "an Acceptance Letter"
+   */
+  getAName(): string {
+    const isStackable = this.template.stackable ?? false
+    if (isStackable && this.number > 1) {
+      return `${this.number} ${capitalise(this.template.name)}`
+    } else if (isStackable && this.number === 1) {
+      return capitalise(this.template.name)
+    } else {
+      // Non-stackable items - prepend "a" or "an" based on first letter
+      const name = this.template.name
+      const firstLetter = name.charAt(0).toLowerCase()
+      const startsWithVowel = ['a', 'e', 'i', 'o', 'u'].includes(firstLetter)
+      const article = startsWithVowel ? 'an' : 'a'
+      return `${article} ${capitalise(name)}`
+    }
   }
 
   toJSON(): ItemData {

@@ -1,5 +1,6 @@
 import { Item } from '../model/Item'
 import { Tooltip } from './Tooltip'
+import { capitalise } from '../model/Text'
 
 type ItemViewProps = {
   item: Item
@@ -26,7 +27,7 @@ export function ItemView({ item, selected = false, onClick }: ItemViewProps) {
           className="item-icon-placeholder"
           style={{ width: `${iconSize}px`, height: `${iconSize}px` }}
         >
-          {itemDef.name.charAt(0).toUpperCase()}
+          {capitalise(itemDef.name).charAt(0)}
         </div>
       )}
       {showNumber && (
@@ -39,7 +40,7 @@ export function ItemView({ item, selected = false, onClick }: ItemViewProps) {
     <div className={`item-view ${selected ? 'selected' : ''}`} onClick={onClick}>
       {iconContent}
       <div className="item-info">
-        <span className="item-name">{itemDef.name}</span>
+        <span className="item-name">{capitalise(itemDef.name)}</span>
       </div>
     </div>
   )
