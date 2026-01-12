@@ -14,6 +14,7 @@ export type LocationId = string
 export interface LocationData {
   id?: LocationId
   numVisits?: number
+  discovered?: boolean
 }
 
 // Static / library information for a location
@@ -26,6 +27,7 @@ export interface LocationDefinition {
   activities?: LocationActivity[]
   onFirstArrive?: Script
   onArrive?: Script
+  secret?: boolean // If true, location starts as undiscovered (discovered = false)
 }
 
 export interface LocationLink {
@@ -47,10 +49,14 @@ export interface LocationActivity {
 export class Location {
   id: LocationId
   numVisits: number
+  discovered: boolean
 
   constructor(id: LocationId) {
     this.id = id
     this.numVisits = 0
+    // Check if location definition has secret flag - if so, start undiscovered
+    const definition = LOCATION_DEFINITIONS[id]
+    this.discovered = definition?.secret === true ? false : true
   }
 
   /** Gets the location definition template. */
@@ -63,10 +69,11 @@ export class Location {
   }
 
   toJSON(): LocationData {
-    // Only serialize mutable state (numVisits) and id
+    // Only serialize mutable state (numVisits, discovered) and id
     return {
       id: this.id,
       numVisits: this.numVisits,
+      discovered: this.discovered,
     }
   }
 
@@ -83,11 +90,12 @@ export class Location {
       throw new Error(`Location definition not found: ${locationId}`)
     }
     
-    // Create location instance with id
+    // Create location instance with id (this will set discovered based on secret field if not overridden)
     const location = new Location(locationId)
     
     // Apply serialized mutable state
     location.numVisits = data.numVisits ?? 0
+    location.discovered = data.discovered ?? location.discovered
     
     return location
   }

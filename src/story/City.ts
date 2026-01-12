@@ -127,12 +127,56 @@ export const LOCATION_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     description: 'A grand educational institution where knowledge flows like steam through pipes.',
     image: '/images/school.jpg',
     links: [{ dest: 'default', time: 5 }, { dest: 'lake', time: 8 }], // 5 minutes to city centre, 8 minutes to lake
+    activities: [
+      {
+        name: 'Explore',
+        script: (g: Game, _params: {}) => {
+          // Advance time by 10 minutes (600 seconds)
+          g.run('timeLapse', { seconds: 10 * 60 })
+          
+          // Check if Lake is already discovered
+          const lakeLocation = g.locations.get('lake')
+          const isLakeDiscovered = lakeLocation ? lakeLocation.discovered : false
+          
+          // Random encounters for the University
+          const encounters = [
+            'You wander through the grand halls, admiring the brass architectural details and mechanical displays. Students hurry past, carrying books and small mechanical devices.',
+            'A professor with mechanical spectacles adjusts the gears on a teaching automaton. The device clicks and whirs as it demonstrates a complex mechanical principle.',
+            'You notice a display case filled with historical clockwork artifacts. Each piece tells a story of innovation and engineering mastery.',
+            'The library wing beckons with its towering shelves. Mechanical book retrieval systems whir overhead, fetching tomes with precise mechanical movements.',
+            'A group of students gathers around a steam-powered experiment, their faces illuminated by the warm glow of the apparatus. The air fills with the scent of oil and knowledge.',
+            'You explore the courtyard, where mechanical fountains create intricate patterns with steam and water. The combination of nature and machinery is mesmerizing.',
+            'A lecture hall stands open, its brass lectern and mechanical projection devices ready for the next class. The room echoes with the promise of learning.',
+            'You notice a small garden area where mechanical flowers bloom, their petals opening and closing in a synchronized dance powered by hidden gears.',
+            'A maintenance corridor reveals the inner workings of the university—pipes, gears, and steam conduits that power the entire building.',
+            'You find a quiet study nook with a view of the campus. The peaceful atmosphere is perfect for contemplation.',
+          ]
+          
+          const randomEncounter = encounters[Math.floor(Math.random() * encounters.length)]
+          g.add(randomEncounter)
+          
+          // Chance to discover the Lake based on Perception skill check (difficulty 0)
+          if (!isLakeDiscovered) {
+            const perceptionCheck = g.player.skillTest('Perception', 0)
+            if (perceptionCheck) {
+              // Discover the Lake
+              g.run('discoverLocation', {
+                location: 'lake',
+                text: 'Through the university windows, you catch a glimpse of something serene in the distance—a lake with steam gently rising from its surface. You make a mental note of how to reach it.',
+                colour: '#3b82f6',
+              })
+            }
+          }
+        },
+      },
+    ],
   },
   lake: {
     name: 'The Lake',
     description: 'A serene city lake, where steam gently rises from the surface.',
     image: '/images/lake.jpg',
     links: [{ dest: 'school', time: 8 }, { dest: 'market', time: 5 }], // 8 minutes back to school, 5 minutes to market
+    secret: true, // Starts as undiscovered - must be found through exploration
   },
   market: {
     name: 'Market',
@@ -140,6 +184,47 @@ export const LOCATION_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     description: 'A bustling marketplace filled with exotic goods and mechanical wonders.',
     links: [{ dest: 'lake', time: 5 }, { dest: 'backstreets', time: 5 }, { dest: 'default', time: 3 }], // 5 minutes to lake, 5 minutes to backstreets, 3 minutes to city centre
     activities: [
+      {
+        name: 'Explore',
+        script: (g: Game, _params: {}) => {
+          // Advance time by 10 minutes (600 seconds)
+          g.run('timeLapse', { seconds: 10 * 60 })
+          
+          // Check if Lake is already discovered
+          const lakeLocation = g.locations.get('lake')
+          const isLakeDiscovered = lakeLocation ? lakeLocation.discovered : false
+          
+          // Random encounters for the Market
+          const encounters = [
+            'You browse through stalls filled with brass trinkets and mechanical curiosities. Vendors call out their wares, their voices competing with the whir of clockwork displays.',
+            'A vendor demonstrates a steam-powered music box, its delicate gears producing a beautiful melody. The intricate mechanism catches your eye.',
+            'You notice a stall selling exotic mechanical components from distant lands. The vendor explains the unique properties of each piece with enthusiasm.',
+            'A food vendor serves hot meals from a steam-powered cart. The aroma of spiced dishes mingles with the scent of oil and brass.',
+            'You explore the textile section, where mechanical looms create intricate patterns. The rhythmic clicking of the machines is almost hypnotic.',
+            'A fortune teller with a mechanical crystal ball offers readings. The device glows with an inner light, its gears spinning mysteriously.',
+            'You watch as a craftsman repairs a broken automaton. His skilled hands work with precision, adjusting gears and tightening springs.',
+            'A stall selling maps and navigational devices catches your attention. The mechanical compasses and brass astrolabes are beautifully crafted.',
+            'You discover a hidden corner where rare mechanical books are sold. The vendor speaks in hushed tones about the knowledge contained within.',
+            'A group of performers entertains the crowd with mechanical puppets. The intricate movements and synchronized actions are captivating.',
+          ]
+          
+          const randomEncounter = encounters[Math.floor(Math.random() * encounters.length)]
+          g.add(randomEncounter)
+          
+          // Chance to discover the Lake based on Perception skill check (difficulty 0)
+          if (!isLakeDiscovered) {
+            const perceptionCheck = g.player.skillTest('Perception', 0)
+            if (perceptionCheck) {
+              // Discover the Lake
+              g.run('discoverLocation', {
+                location: 'lake',
+                text: 'While exploring the market, you overhear a conversation about a peaceful lake nearby. Someone mentions the path that leads to it, and you commit the directions to memory.',
+                colour: '#3b82f6',
+              })
+            }
+          }
+        },
+      },
       {
         name: 'Lucky Dip',
         script: (g: Game, _params: {}) => {

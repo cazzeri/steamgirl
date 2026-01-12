@@ -98,7 +98,7 @@ export const utilityScripts = {
     }
     
     // Ensure location exists in game's locations map
-    game.ensureLocation(locationId)
+    game.getLocation(locationId)
     
     // Change current location
     game.currentLocation = locationId
@@ -154,6 +154,9 @@ export const utilityScripts = {
     // Actually move the player
     game.run('move', { location: locationId })
     
+    // Visiting a location always sets it as discovered
+    gameLocation.discovered = true
+    
     // Run onFirstArrive script if this is the first visit and the location has one
     if (isFirstVisit && gameLocation.template.onFirstArrive) {
       gameLocation.template.onFirstArrive(game, {})
@@ -168,6 +171,31 @@ export const utilityScripts = {
   // Recalculate stats based on basestats and modifiers from active Items and Cards
   calcStats: (game: Game, _params: {}) => {
     game.calcStats()
+  },
+  
+  // Discover a location - sets discovered flag and optionally displays text
+  discoverLocation: (game: Game, params: {
+    location?: string
+    text?: string
+    colour?: string
+  } = {}) => {
+    const locationId = params.location
+    if (!locationId || typeof locationId !== 'string') {
+      throw new Error('discoverLocation script requires a location parameter')
+    }
+    
+    // Ensure location exists in game's locations map
+    const gameLocation = game.getLocation(locationId)
+    if (gameLocation.discovered) return; // exit if already discovered
+    
+    // Get the location instance and set discovered flag
+    gameLocation.discovered = true
+    
+    // Display text if provided (default color is blue)
+    if (params.text) {
+      const displayColor = params.colour || '#3b82f6' // Default blue
+      game.add(colour(params.text, displayColor))
+    }
   },
   
   // Modify a base stat with optional display text and color

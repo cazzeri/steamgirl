@@ -67,7 +67,7 @@ export class Game {
   }
 
   /** Ensures a location exists in the game's locations map, creating a new instance if needed. Throws if location definition doesn't exist. */
-  ensureLocation(locationId: string): void {
+  private ensureLocation(locationId: string): void {
     if (!this.locations.has(locationId)) {
       // Verify the location definition exists
       if (!getLocationDefinition(locationId)) {

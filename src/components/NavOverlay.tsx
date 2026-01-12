@@ -22,9 +22,21 @@ export function NavOverlay() {
     }
   }
 
+  // Filter links to only show discovered locations
+  const discoveredLinks = links.filter(link => {
+    const gameLocation = game.getLocation(link.dest)
+    
+    // If secret, default to false (undiscovered), otherwise true (discovered)
+    return gameLocation.discovered
+  })
+
+  if (discoveredLinks.length === 0) {
+    return null
+  }
+
   return (
     <div className="nav-links">
-      {links.map((link, index) => {
+      {discoveredLinks.map((link, index) => {
         const targetLocation = getLocation(link.dest)
         if (!targetLocation) return null
 
