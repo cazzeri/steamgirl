@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { Game } from './Game'
 import { Item } from './Item'
+import { registerNPC, NPC } from './NPC'
 import '../story/Effects' // Register effect definitions
 import '../story/Start' // Register start scripts
 import '../story/Utility' // Register utility scripts
@@ -183,5 +184,76 @@ describe('Game', () => {
     const reloadedNPC = reloadedGame.getNPC('test-npc')
     expect(reloadedNPC.id).toBe('test-npc')
     expect(reloadedNPC.template.name).toBe('Test NPC')
+  })
+
+  it('should run onApproach script when approaching an NPC', () => {
+    const game = new Game()
+    
+    // Approach the test NPC
+    game.run('approach', { npc: 'test-npc' })
+    
+    // Check that approachCount was incremented
+    const npc = game.getNPC('test-npc')
+    expect(npc.approachCount).toBe(1)
+    
+    // Check that the scene contains the expected message
+    const hasMessage = game.scene.content.some(item => {
+      if (item.type === 'text') {
+        return item.text.includes('Test NPC says:')
+      }
+      if (item.type === 'paragraph') {
+        return item.content.some(c => c.type === 'text' && c.text.includes('Test NPC says:'))
+      }
+      return false
+    })
+    expect(hasMessage).toBe(true)
+  })
+
+  it('should show default message when NPC has no onApproach script', () => {
+    const game = new Game()
+    
+    // Create a test NPC without onApproach - register it inline
+    registerNPC('silent-npc', {
+      name: 'Silent NPC',
+      description: 'An NPC that doesn\'t want to talk.',
+      generate: () => new NPC('silent-npc'),
+      // No onApproach script
+    })
+    
+    // Approach the silent NPC
+    game.run('approach', { npc: 'silent-npc' })
+    
+    // Check that approachCount was incremented
+    const npc = game.getNPC('silent-npc')
+    expect(npc.approachCount).toBe(1)
+    
+    // Check that the scene contains the default message
+    const hasDefaultMessage = game.scene.content.some(item => {
+      if (item.type === 'text') {
+        return item.text.includes("isn't interested in talking to you")
+      }
+      if (item.type === 'paragraph') {
+        return item.content.some(c => c.type === 'text' && c.text.includes("isn't interested in talking to you"))
+      }
+      return false
+    })
+    expect(hasDefaultMessage).toBe(true)
+  })
+
+  it('should increment approachCount on multiple approaches', () => {
+    const game = new Game()
+    
+    const npc = game.getNPC('test-npc')
+    expect(npc.approachCount).toBe(0)
+    
+    // Approach multiple times
+    game.run('approach', { npc: 'test-npc' })
+    expect(npc.approachCount).toBe(1)
+    
+    game.run('approach', { npc: 'test-npc' })
+    expect(npc.approachCount).toBe(2)
+    
+    game.run('approach', { npc: 'test-npc' })
+    expect(npc.approachCount).toBe(3)
   })
 })

@@ -278,6 +278,33 @@ export const utilityScripts = {
       game.add(colour(displayText, displayColor))
     }
   },
+
+  // Approach an NPC to talk to them
+  approach: (game: Game, params: { npc?: string } = {}) => {
+    const npcId = params.npc
+    if (!npcId || typeof npcId !== 'string') {
+      throw new Error('approach script requires an npc parameter (string id)')
+    }
+
+    // Get the NPC instance (will generate if needed)
+    const npc = game.getNPC(npcId)
+    
+    // Increment approach count
+    npc.approachCount++
+
+    // Get the NPC definition
+    const npcDef = npc.template
+
+    // Check if the NPC has an onApproach script
+    if (npcDef.onApproach) {
+      // Run the onApproach script
+      npcDef.onApproach(game, {})
+    } else {
+      // Show default message
+      const npcName = npcDef.name || 'The NPC'
+      game.add(`${npcName} isn't interested in talking to you.`)
+    }
+  },
 }
 
 // Register all utility scripts when module loads

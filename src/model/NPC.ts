@@ -1,11 +1,12 @@
 import { Game } from "./Game"
+import type { Script } from "./Scripts"
 
 export type NPCId = string
 
 // Mutable data for an NPC, used for serialization
 export interface NPCData {
   id?: NPCId
-  // Add mutable state properties here as needed
+  approachCount?: number
 }
 
 // Static / library information for an NPC
@@ -15,14 +16,18 @@ export interface NPCDefinition {
   image?: string
   // Generate function that creates the NPC instance when first accessed
   generate: (game: Game) => NPC
+  // Script to run when player approaches this NPC
+  onApproach?: Script
 }
 
 /** Represents a game NPC instance with mutable state. Definitional data is accessed via the template property. */
 export class NPC {
   id: NPCId
+  approachCount: number
 
   constructor(id: NPCId) {
     this.id = id
+    this.approachCount = 0
   }
 
   /** Gets the NPC definition template. */
@@ -38,6 +43,7 @@ export class NPC {
     // Only serialize mutable state and id
     return {
       id: this.id,
+      approachCount: this.approachCount,
     }
   }
 
@@ -57,7 +63,8 @@ export class NPC {
     // Use the generate function to create the NPC instance
     const npc = NPC_DEFINITIONS[npcId].generate(game)
     
-    // Apply any serialized mutable state here if needed
+    // Apply serialized mutable state
+    npc.approachCount = data.approachCount ?? 0
     
     return npc
   }

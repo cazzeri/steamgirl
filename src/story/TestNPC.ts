@@ -8,4 +8,7 @@ registerNPC('test-npc', {
   generate: (_game: Game) => {
     return new NPC('test-npc')
   },
+  onApproach: (game: Game) => {
+    game.add('Test NPC says: "Hello! How can I help you?"')
+  },
 })
