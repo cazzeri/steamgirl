@@ -308,32 +308,22 @@ img {
   padding: var(--space-sm) var(--space-md);
 }
 
-.mouse-over-target {
-  position: relative;
-  display: inline;
-  vertical-align: baseline;
+/* react-tooltip custom styling */
+.custom-tooltip {
+  background: var(--bg-panel) !important;
+  color: var(--text-main) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-sm) !important;
+  padding: var(--space-sm) var(--space-md) !important;
+  box-shadow: var(--shadow-strong) !important;
+  max-width: 320px !important;
+  z-index: 99999 !important;
 }
 
-.mouse-over-overlay {
-  position: absolute;
-  top: 50%;
-  left: 100%;
-  transform: translate(16px, -50%);
-  min-width: 200px;
-  max-width: 320px;
-  pointer-events: none;
-  display: block;
-  z-index: 1000;
-
-  opacity: 0;
-  transition:
-    opacity 160ms ease-out,
-    transform 160ms ease-out;
-}
-
-.mouse-over-target:hover .mouse-over-overlay {
-  opacity: 1;
-  transform: translate(10px, -50%);
+/* Ensure react-tooltip portal container has high z-index */
+#react-tooltip-portal,
+[data-tooltip-id] {
+  z-index: 99999 !important;
 }
 
 .button-column {
