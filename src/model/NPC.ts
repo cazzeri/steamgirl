@@ -7,6 +7,7 @@ export type NPCId = string
 export interface NPCData {
   id?: NPCId
   approachCount?: number
+  location?: string | null
 }
 
 // Static / library information for an NPC
@@ -14,20 +15,56 @@ export interface NPCDefinition {
   name?: string
   description?: string
   image?: string
-  // Generate function that creates the NPC instance when first accessed
-  generate: (game: Game) => NPC
+  // Optional generate function that initializes the NPC instance (NPC is already constructed)
+  generate?: (game: Game, npc: NPC) => void
   // Script to run when player approaches this NPC
   onApproach?: Script
+  // Script to run when the hour changes (for NPC movement)
+  onMove?: Script
 }
 
 /** Represents a game NPC instance with mutable state. Definitional data is accessed via the template property. */
 export class NPC {
   id: NPCId
   approachCount: number
+  location: string | null
 
   constructor(id: NPCId) {
     this.id = id
     this.approachCount = 0
+    this.location = null
+  }
+
+  /**
+   * Follow a schedule to determine NPC location based on current hour.
+   * Schedule format: [[startHour, endHour, locationId], ...]
+   * Hours are 0-23. If current hour falls within a range, NPC moves to that location.
+   * If no schedule matches, NPC location is set to null.
+   */
+  followSchedule(game: Game, schedule: [number, number, string][]): void {
+    const currentDate = new Date(game.time * 1000)
+    const currentHour = currentDate.getHours()
+    
+    // Find matching schedule entry
+    for (const [startHour, endHour, locationId] of schedule) {
+      // Handle wrap-around (e.g., 22-2 means 22:00 to 02:00 next day)
+      let matches = false
+      if (startHour <= endHour) {
+        // Normal case: startHour to endHour within same day
+        matches = currentHour >= startHour && currentHour < endHour
+      } else {
+        // Wrap-around case: e.g., 22 to 2 means 22:00-23:59 and 00:00-01:59
+        matches = currentHour >= startHour || currentHour < endHour
+      }
+      
+      if (matches) {
+        this.location = locationId
+        return
+      }
+    }
+    
+    // No schedule matches, set location to null
+    this.location = null
   }
 
   /** Gets the NPC definition template. */
@@ -44,6 +81,7 @@ export class NPC {
     return {
       id: this.id,
       approachCount: this.approachCount,
+      location: this.location,
     }
   }
 
@@ -56,15 +94,22 @@ export class NPC {
     }
     
     // Verify definition exists
-    if (!NPC_DEFINITIONS[npcId]) {
+    const definition = NPC_DEFINITIONS[npcId]
+    if (!definition) {
       throw new Error(`NPC definition not found: ${npcId}`)
     }
     
-    // Use the generate function to create the NPC instance
-    const npc = NPC_DEFINITIONS[npcId].generate(game)
+    // Create the NPC instance
+    const npc = new NPC(npcId)
     
-    // Apply serialized mutable state
+    // Call generate function if it exists
+    if (definition.generate) {
+      definition.generate(game, npc)
+    }
+    
+    // Apply serialized mutable state (overrides any values set by generate)
     npc.approachCount = data.approachCount ?? 0
+    npc.location = data.location ?? null
     
     return npc
   }

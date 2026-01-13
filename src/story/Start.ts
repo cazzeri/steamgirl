@@ -3,8 +3,43 @@ import { makeScripts } from '../model/Scripts'
 import { option, p, highlight } from '../model/Format'
 import type { CardDefinition } from '../model/Card'
 import { registerCardDefinition } from '../model/Card'
+import { NPC, registerNPC } from '../model/NPC'
 import '../story/Effects' // Register effect definitions
 import '../story/Lodgings' // Register lodgings scripts
+
+// Register NPCs that appear at the station
+registerNPC('automaton-greeter', {
+  name: 'Automaton Greeter',
+  description: 'A brass-plated automaton that greets visitors to the station.',
+  generate: (_game: Game, npc: NPC) => {
+    // Set initial location to station
+    npc.location = 'station'
+  },
+  onApproach: (game: Game) => {
+    game.add('The automaton greeter clicks and whirs, its brass voicebox producing a mechanical greeting: "Welcome to Ironspark Terminus. How may I assist you today?"')
+  },
+})
+
+registerNPC('commuter', {
+  name: 'Commuter',
+  description: 'A regular commuter waiting at the station.',
+  // generate is optional - using default NPC instance
+  onApproach: (game: Game) => {
+    game.add('The commuter looks up from their pocket watch, giving you a brief nod before returning their attention to the station clock.')
+  },
+  onMove: (game: Game) => {
+    const npc = game.getNPC('commuter')
+    // Update location based on schedule when hour changes
+    const schedule: [number, number, string][] = [
+      [6, 7, 'station'],    // Morning rush hour
+      [17, 18, 'default'],    // Heading home
+      [18, 19, 'station'],   // Evening rush hour
+    ]
+    npc.followSchedule(game, schedule)
+    // Update npcsPresent after NPC moves
+    game.updateNPCsPresent()
+  },
+})
 
 export const startScripts = {
   init: (g: Game) => {
@@ -36,6 +71,13 @@ export const startScripts = {
     g.run('gainItem', { item: 'magic-potion', number: 1 })
     g.run('gainItem', { item: 'fun-juice', number: 1 })
     
+    // Generate NPCs that should be present at the start
+    g.getNPC('automaton-greeter')
+    g.getNPC('commuter')
+    
+    // Update npcsPresent after generating NPCs
+    g.updateNPCsPresent()
+    
     // Move on to start script
     g.run('start', {})
   },
@@ -64,7 +106,7 @@ export const startScripts = {
   },
   
   startExploring: (g: Game) => {
-    g.add('You decide to start your exploration at the station. The world is at your feet!')
+    g.add('The world is at your feet!')
     // Player can now navigate and explore from the station
   },
   

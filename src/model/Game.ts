@@ -39,6 +39,7 @@ export class Game {
   player: Player
   locations: Map<string, Location>
   npcs: Map<string, NPC>
+  npcsPresent: string[] // List of NPC IDs at the current location
   currentLocation: string
   scene: SceneData
   time: number
@@ -49,6 +50,7 @@ export class Game {
     this.player = new Player()
     this.locations = new Map<string, Location>()
     this.npcs = new Map<string, NPC>()
+    this.npcsPresent = []
     this.currentLocation = 'station'
     this.scene = {
       type: 'story',
@@ -93,28 +95,45 @@ export class Game {
     return location
   }
 
-  /** Ensures an NPC exists in the game's NPCs map, generating it if needed. Throws if NPC definition doesn't exist. */
-  private ensureNPC(npcId: string): void {
-    if (!this.npcs.has(npcId)) {
-      // Verify the NPC definition exists
-      const definition = getNPCDefinition(npcId)
-      if (!definition) {
-        throw new Error(`NPC definition not found: ${npcId}`)
-      }
-      // Generate the NPC using its generate function
-      const npc = definition.generate(this)
-      this.npcs.set(npcId, npc)
-    }
+  /** Moves the player to a new location and updates npcsPresent. */
+  moveToLocation(locationId: string): void {
+    this.currentLocation = locationId
+    this.updateNPCsPresent()
   }
 
   /** Gets an NPC from the game's NPCs map, generating it if needed. Returns the NPC instance. */
   getNPC(npcId: string): NPC {
-    this.ensureNPC(npcId)
-    const npc = this.npcs.get(npcId)
-    if (!npc) {
-      // This should never happen after ensureNPC, but TypeScript needs this
-      throw new Error(`NPC not found: ${npcId}`)
+    // Check if NPC already exists
+    const existingNPC = this.npcs.get(npcId)
+    if (existingNPC) {
+      return existingNPC
     }
+    
+    // NPC doesn't exist, need to create it
+    // Verify the NPC definition exists
+    const definition = getNPCDefinition(npcId)
+    if (!definition) {
+      throw new Error(`NPC definition not found: ${npcId}`)
+    }
+    
+    // Create the NPC instance
+    const npc = new NPC(npcId)
+    
+    // Call generate function if it exists (to initialize any fields)
+    if (definition.generate) {
+      definition.generate(this, npc)
+    }
+    
+    // Add NPC to map BEFORE calling onMove to prevent infinite recursion
+    // (onMove might call getNPC, but now it will find the NPC in the map)
+    this.npcs.set(npcId, npc)
+    
+    // Call onMove immediately after generation so NPC can position itself
+    // This is safe now because the NPC is already in the map
+    if (definition.onMove) {
+      definition.onMove(this, {})
+    }
+    
     return npc
   }
 
@@ -224,6 +243,19 @@ export class Game {
     this.player.calcStats()
   }
 
+  /**
+   * Update npcsPresent list based on NPC locations matching current location.
+   * Should be called after NPC movement or location changes.
+   */
+  updateNPCsPresent(): void {
+    this.npcsPresent = []
+    this.npcs.forEach((npc, npcId) => {
+      if (npc.location === this.currentLocation) {
+        this.npcsPresent.push(npcId)
+      }
+    })
+  }
+
   /** Clear the current scene (resets content and options). */
   clearScene(): void {
     this.scene = {
@@ -311,6 +343,9 @@ export class Game {
     
     // Ensure currentLocation exists in the map, fallback to registry if missing
     game.getLocation(game.currentLocation)
+    
+    // Update npcsPresent after loading NPCs
+    game.updateNPCsPresent()
     
     return game
   }

@@ -3,6 +3,7 @@ import type { LocationId, LocationDefinition } from '../model/Location'
 import { option } from '../model/Format'
 import { makeScripts } from '../model/Scripts'
 import { Item } from '../model/Item'
+import { NPC, registerNPC } from '../model/NPC'
 
 // Location definitions for the city of Aetheria
 // These are the standard locations. Others might be added elsewhere

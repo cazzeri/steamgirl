@@ -216,7 +216,7 @@ describe('Game', () => {
     registerNPC('silent-npc', {
       name: 'Silent NPC',
       description: 'An NPC that doesn\'t want to talk.',
-      generate: () => new NPC('silent-npc'),
+      // generate is optional - using default NPC instance
       // No onApproach script
     })
     

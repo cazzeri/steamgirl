@@ -1,6 +1,7 @@
 import { SceneOverlay } from './SceneOverlay'
 import { NavOverlay } from './NavOverlay'
 import { ActivityOverlay } from './ActivityOverlay'
+import { NPCOverlay } from './NPCOverlay'
 import { Location } from '../model/Location'
 import { useGame } from '../context/GameContext'
 
@@ -28,6 +29,7 @@ export function LocationView({ location }: LocationViewProps) {
   const sceneHasContent = scene && scene.content.length > 0
   const showLocationLinks = !(sceneHasOptions)
   const showActivities = template.activities && template.activities.length > 0 && !sceneHasOptions
+  const showNPCs = game && game.npcsPresent && game.npcsPresent.length > 0 && !sceneHasOptions
 
   return (
     <div 
@@ -52,6 +54,7 @@ export function LocationView({ location }: LocationViewProps) {
         {(sceneHasContent||sceneHasContent) && <SceneOverlay scene={scene} />}
       </div>
       <div className="bottom-overlays">
+        {showNPCs && <NPCOverlay />}
         {showActivities && <ActivityOverlay />}
         {showLocationLinks && <NavOverlay />}
       </div>

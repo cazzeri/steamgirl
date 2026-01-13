@@ -103,7 +103,16 @@ export class Player {
       player.inventory = []
     }
     if (data.cards) {
-      player.cards = data.cards.map((cardData: CardData) => Card.fromJSON(cardData))
+      player.cards = data.cards
+        .map((cardData: CardData) => {
+          try {
+            return Card.fromJSON(cardData)
+          } catch (error) {
+            console.error(`Failed to deserialize card:`, cardData, error)
+            return null
+          }
+        })
+        .filter((card: Card | null): card is Card => card !== null)
     } else {
       // If cards is missing, start with empty array
       player.cards = []

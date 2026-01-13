@@ -20,7 +20,19 @@ export const utilityScripts = {
     if (typeof minutes !== 'number' || minutes < 0) {
       throw new Error('timeLapse requires a non-negative number of minutes')
     }
+    
+    // Get current hour before time change
+    const dateBefore = new Date(game.time * 1000)
+    const hourBefore = dateBefore.getHours()
+    
     game.time += seconds + (minutes * 60)
+    
+    // Get current hour after time change
+    const dateAfter = new Date(game.time * 1000)
+    const hourAfter = dateAfter.getHours()
+    
+    // Check if hour changed (e.g., 11:59 -> 12:01)
+    const hourChanged = hourBefore !== hourAfter
     
     // Calculate total elapsed seconds for onTime callbacks
     const totalSeconds = seconds + (minutes * 60)
@@ -36,6 +48,18 @@ export const utilityScripts = {
           cardDef.onTime(game, card, totalSeconds)
         }
       }
+    }
+    
+    // If hour changed, call onMove for all NPCs that have it
+    if (hourChanged) {
+      game.npcs.forEach((npc) => {
+        const npcDef = npc.template
+        if (npcDef.onMove && typeof npcDef.onMove === 'function') {
+          npcDef.onMove(game, {})
+        }
+      })
+      // Update npcsPresent after NPCs have moved
+      game.updateNPCsPresent()
     }
   },
   
@@ -100,8 +124,8 @@ export const utilityScripts = {
     // Ensure location exists in game's locations map
     game.getLocation(locationId)
     
-    // Change current location
-    game.currentLocation = locationId
+    // Change current location and update NPCs present
+    game.moveToLocation(locationId)
   },
   
   // Navigate to a given location (checks links, triggers arrival scripts, time lapse, etc.)

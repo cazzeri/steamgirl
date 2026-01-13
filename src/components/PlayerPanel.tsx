@@ -20,7 +20,7 @@ export function PlayerPanel() {
   const renderTabContent = () => {
     switch (selectedTab) {
       case 'Status':
-        const effectCards = game?.player.cards.filter(card => card.type === 'Effect') || []
+        const effectCards = game?.player.cards.filter(card => card && card.type === 'Effect') || []
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
             <Clock />
@@ -31,6 +31,7 @@ export function PlayerPanel() {
                 <h4 style={{ marginBottom: 'var(--space-sm)' }}>Effects</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
                   {effectCards.map((card, index) => {
+                    if (!card) return null
                     const cardDef = card.template
                     const color = (cardDef as any).color || '#ffffff'
                     return (
@@ -47,14 +48,14 @@ export function PlayerPanel() {
       case 'Inventory':
         return <InventoryView />
       case 'Quests':
-        const questCards = game?.player.cards.filter(card => card.type === 'Quest') || []
+        const questCards = game?.player.cards.filter(card => card && card.type === 'Quest') || []
         if (questCards.length === 0) {
           return <p>No quests available.</p>
         }
         return (
           <div className="cards-container">
             {questCards.map((card, index) => (
-              <Card key={`${card.id}-${index}`} card={card} />
+              card ? <Card key={`${card.id}-${index}`} card={card} /> : null
             ))}
           </div>
         )
