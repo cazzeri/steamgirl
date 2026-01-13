@@ -33,7 +33,3 @@ export function runScript(name: string, game: Game, params: {} = {}): any {
   return script(game, params)
 }
 
-// For testing purposes: clear all scripts
-export function clearScripts(): void {
-  Object.keys(SCRIPTS).forEach(key => delete SCRIPTS[key])
-}
