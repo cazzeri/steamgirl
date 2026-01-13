@@ -1,5 +1,6 @@
 import { Player, type PlayerData } from './Player'
 import { Location, type LocationData, getLocation as getLocationDefinition } from './Location'
+import { NPC, type NPCData, getNPCDefinition } from './NPC'
 import { runScript as runScriptImpl } from './Scripts'
 import { Card } from './Card'
 
@@ -25,6 +26,7 @@ export interface GameData {
   score: number
   player: PlayerData
   locations: Record<string, LocationData>
+  npcs?: Record<string, NPCData>
   currentLocation?: string
   scene: SceneData
   time: number
@@ -36,6 +38,7 @@ export class Game {
   score: number
   player: Player
   locations: Map<string, Location>
+  npcs: Map<string, NPC>
   currentLocation: string
   scene: SceneData
   time: number
@@ -45,6 +48,7 @@ export class Game {
     this.score = 0
     this.player = new Player()
     this.locations = new Map<string, Location>()
+    this.npcs = new Map<string, NPC>()
     this.currentLocation = 'station'
     this.scene = {
       type: 'story',
@@ -87,6 +91,31 @@ export class Game {
       throw new Error(`Location not found: ${locationId}`)
     }
     return location
+  }
+
+  /** Ensures an NPC exists in the game's NPCs map, generating it if needed. Throws if NPC definition doesn't exist. */
+  private ensureNPC(npcId: string): void {
+    if (!this.npcs.has(npcId)) {
+      // Verify the NPC definition exists
+      const definition = getNPCDefinition(npcId)
+      if (!definition) {
+        throw new Error(`NPC definition not found: ${npcId}`)
+      }
+      // Generate the NPC using its generate function
+      const npc = definition.generate(this)
+      this.npcs.set(npcId, npc)
+    }
+  }
+
+  /** Gets an NPC from the game's NPCs map, generating it if needed. Returns the NPC instance. */
+  getNPC(npcId: string): NPC {
+    this.ensureNPC(npcId)
+    const npc = this.npcs.get(npcId)
+    if (!npc) {
+      // This should never happen after ensureNPC, but TypeScript needs this
+      throw new Error(`NPC not found: ${npcId}`)
+    }
+    return npc
   }
 
   /** Add an option button to the current scene that runs a script. */
@@ -210,11 +239,18 @@ export class Game {
       locationsRecord[id] = location.toJSON()
     })
     
+    // Convert NPCs map to Record for JSON serialization
+    const npcsRecord: Record<string, NPCData> = {}
+    this.npcs.forEach((npc, id) => {
+      npcsRecord[id] = npc.toJSON()
+    })
+    
     return {
       version: this.version,
       score: this.score,
       player: this.player.toJSON(),
       locations: locationsRecord,
+      npcs: npcsRecord,
       currentLocation: this.currentLocation,
       scene: this.scene,
       time: this.time,
@@ -259,6 +295,17 @@ export class Game {
         const locationDataWithId: LocationData = Object.assign({ id }, locationData as LocationData)
         const location = Location.fromJSON(locationDataWithId)
         game.locations.set(id, location)
+      })
+    }
+    
+    // Deserialize NPCs map - use generate function to recreate NPCs
+    if (data.npcs) {
+      game.npcs = new Map<string, NPC>()
+      Object.entries(data.npcs).forEach(([id, npcData]) => {
+        // Ensure id matches the key (for backwards compatibility)
+        const npcDataWithId: NPCData = Object.assign({ id }, npcData as NPCData)
+        const npc = NPC.fromJSON(npcDataWithId, game)
+        game.npcs.set(id, npc)
       })
     }
     

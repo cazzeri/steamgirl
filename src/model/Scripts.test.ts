@@ -1,11 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { Game } from './Game'
-import { makeScript, runScript, clearScripts } from './Scripts'
+import { makeScript, runScript} from './Scripts'
 
 describe('Scripts', () => {
-  beforeEach(() => {
-    clearScripts()
-  })
 
   it('should run a script on a new Game', () => {
     // Register a simple test script

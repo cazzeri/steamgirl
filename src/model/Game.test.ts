@@ -4,6 +4,7 @@ import { Item } from './Item'
 import '../story/Effects' // Register effect definitions
 import '../story/Start' // Register start scripts
 import '../story/Utility' // Register utility scripts
+import '../story/TestNPC' // Register test NPC
 
 describe('Game', () => {
   it('should create a new Game', () => {
@@ -139,5 +140,48 @@ describe('Game', () => {
     expect(agility).toBeDefined()
     expect(agility!).toBeGreaterThan(10)
     expect(agility).toBe(30) // Should be exactly 30
+  })
+
+  it('should generate NPC correctly when getNPC is called', () => {
+    const game = new Game()
+    
+    // Initially, NPC should not exist in map
+    expect(game.npcs.has('test-npc')).toBe(false)
+    
+    // Get NPC - should generate it
+    const npc = game.getNPC('test-npc')
+    
+    // NPC should now exist in map
+    expect(game.npcs.has('test-npc')).toBe(true)
+    expect(npc.id).toBe('test-npc')
+    expect(npc.template.name).toBe('Test NPC')
+    expect(npc.template.description).toBe('A test NPC for testing purposes.')
+  })
+
+  it('should return same NPC instance on subsequent getNPC calls', () => {
+    const game = new Game()
+    
+    const npc1 = game.getNPC('test-npc')
+    const npc2 = game.getNPC('test-npc')
+    
+    // Should return the same instance
+    expect(npc1).toBe(npc2)
+  })
+
+  it('should serialize and deserialize NPCs correctly', () => {
+    const game = new Game()
+    
+    // Generate an NPC
+    game.getNPC('test-npc')
+    
+    // Serialize and deserialize
+    const gameData = game.toJSON()
+    const reloadedGame = Game.fromJSON(gameData)
+    
+    // NPC should be restored
+    expect(reloadedGame.npcs.has('test-npc')).toBe(true)
+    const reloadedNPC = reloadedGame.getNPC('test-npc')
+    expect(reloadedNPC.id).toBe('test-npc')
+    expect(reloadedNPC.template.name).toBe('Test NPC')
   })
 })
