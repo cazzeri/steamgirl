@@ -5,39 +5,50 @@ import { type StatName, type MeterName, METER_INFO } from '../model/Stats'
 import { capitalise } from '../model/Text'
 import { colour } from '../model/Format'
 
-export const universityScripts = {
-  universityInduction: (game: Game, _params: {}) => {
-    game.clearScene()
-    
-    game.add('You approach the university administration office, where a stern-looking administrator with mechanical spectacles reviews your acceptance letter.')
-    game.add('"Ah, you\'re the new student," she says, her voice carrying the precision of well-oiled gears. "Welcome to the University of Aetheria. Your induction begins now."')
-    game.add('She leads you through the grand entrance and into the university hallways. The corridors stretch before you, lined with brass fixtures and mechanical displays.')
-    game.add('"These are the main hallways," she explains. "They connect all the important areas of the university: the Great Hall for dining, the classrooms for lectures, and the courtyard for relaxation."')
-    game.add('As you walk, you notice the intricate clockwork mechanisms embedded in the walls, the gentle hum of steam pipes, and the scholarly atmosphere that permeates every corner.')
-    game.add('"You now have full access to the university facilities," the administrator continues. "Remember, the university is open Monday through Friday, from 7am to 9pm. Make the most of your time here."')
-    game.add('With that, she hands you a small brass key and departs, leaving you to explore the university on your own.')
-    
-    // Discover the hallway location (grants access)
-    const hallwayLocation = game.getLocation('hallway')
-    hallwayLocation.discovered = true
-    
-    // Complete the quest
-    game.completeQuest('attend-university')
-    
-    // Update navigation to show the new link
-    game.updateNPCsPresent()
-  },
-}
-
 export const utilityScripts = {
   /* Advance the game's time by a given number of seconds
-  * Should not tigger any events, i.e. safe to 
+  * Should not trigger any events, i.e. safe to 
   * call from any script.
   */ 
   
-  timeLapse: (game: Game, params: { seconds?: number , minutes?: number } = {}) => {
-    const seconds = params.seconds ?? 0
-    const minutes = params.minutes ?? 0
+  timeLapse: (game: Game, params: { seconds?: number , minutes?: number, untilTime?: number } = {}) => {
+    let seconds = params.seconds ?? 0
+    let minutes = params.minutes ?? 0
+    
+    // If untilTime is provided (as hour of day, e.g., 10 or 10.25 for 10:15am)
+    if (params.untilTime !== undefined) {
+      if (typeof params.untilTime !== 'number') {
+        throw new Error('timeLapse untilTime must be a number (hour of day, e.g., 10 or 10.25)')
+      }
+      
+      const targetHour = params.untilTime
+      const currentDate = new Date(game.time * 1000)
+      const currentHour = currentDate.getHours() + currentDate.getMinutes() / 60
+      
+      // Calculate target time on the current day
+      const targetDate = new Date(currentDate)
+      const targetHourInt = Math.floor(targetHour)
+      const targetMinutes = Math.floor((targetHour - targetHourInt) * 60)
+      const targetSeconds = Math.floor(((targetHour - targetHourInt) * 60 - targetMinutes) * 60)
+      
+      targetDate.setHours(targetHourInt, targetMinutes, targetSeconds, 0)
+      const targetTime = Math.floor(targetDate.getTime() / 1000)
+      
+      const currentTime = game.time
+      const timeDifference = targetTime - currentTime
+      
+      // Only advance if target is in the future on the same day
+      // Never cross a day boundary
+      if (timeDifference > 0 && targetDate.getDate() === currentDate.getDate()) {
+        seconds = timeDifference
+        minutes = 0 // Reset minutes since we're using total seconds
+      } else {
+        // Target has passed today or would cross day boundary, do nothing
+        seconds = 0
+        minutes = 0
+      }
+    }
+    
     if (typeof seconds !== 'number' || seconds < 0) {
       throw new Error('timeLapse requires a non-negative number of seconds')
     }
@@ -45,11 +56,17 @@ export const utilityScripts = {
       throw new Error('timeLapse requires a non-negative number of minutes')
     }
     
+    // Calculate total elapsed seconds for onTime callbacks
+    const totalSeconds = seconds + (minutes * 60)
+    
     // Get current hour before time change
     const dateBefore = new Date(game.time * 1000)
     const hourBefore = dateBefore.getHours()
     
-    game.time += seconds + (minutes * 60)
+    // Advance time (if untilTime was in the past, we already set it above)
+    if (totalSeconds > 0) {
+      game.time += totalSeconds
+    }
     
     // Get current hour after time change
     const dateAfter = new Date(game.time * 1000)
@@ -57,9 +74,6 @@ export const utilityScripts = {
     
     // Check if hour changed (e.g., 11:59 -> 12:01)
     const hourChanged = hourBefore !== hourAfter
-    
-    // Calculate total elapsed seconds for onTime callbacks
-    const totalSeconds = seconds + (minutes * 60)
     
     // Call onTime for all player cards that have it
     if (totalSeconds > 0) {
@@ -369,7 +383,6 @@ export const utilityScripts = {
 
 // Register all utility scripts when module loads
 makeScripts(utilityScripts)
-makeScripts(universityScripts)
 
 // Helper function for location discovery checks (can be called directly, not as a script)
 export function maybeDiscoverLocation(
