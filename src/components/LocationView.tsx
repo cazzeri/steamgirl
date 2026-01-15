@@ -54,8 +54,8 @@ export function LocationView({ location }: LocationViewProps) {
         {(sceneHasContent||sceneHasContent) && <SceneOverlay scene={scene} />}
       </div>
       <div className="bottom-overlays">
-        {showNPCs && <NPCOverlay />}
         {showActivities && <ActivityOverlay />}
+        {showNPCs && <NPCOverlay />}
         {showLocationLinks && <NavOverlay />}
       </div>
     </div>

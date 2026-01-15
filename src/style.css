@@ -463,6 +463,7 @@ img {
 }
 
 .activities,
+.npcs,
 .nav-links {
   display: flex;
   flex-direction: row;
@@ -475,9 +476,12 @@ img {
   justify-content: flex-start;
 }
 
+.npcs {
+  justify-content: center;
+}
+
 .nav-links {
   justify-content: flex-end;
-  margin-left: auto;
 }
 
 /* General-purpose thumbnail component */
