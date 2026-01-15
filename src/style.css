@@ -484,6 +484,11 @@ img {
   justify-content: flex-end;
 }
 
+/* When nav-links is the only child, push it to the right */
+.bottom-overlays > .nav-links:only-child {
+  margin-left: auto;
+}
+
 /* General-purpose thumbnail component */
 
 .thumbnail {
