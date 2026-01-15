@@ -315,6 +315,9 @@ export const utilityScripts = {
     
     // Increment approach count
     npc.approachCount++
+    
+    // Player learns the NPC's name when they approach
+    npc.nameKnown = true
 
     // Get the NPC definition
     const npcDef = npc.template
@@ -333,3 +336,33 @@ export const utilityScripts = {
 
 // Register all utility scripts when module loads
 makeScripts(utilityScripts)
+
+// Helper function for location discovery checks (can be called directly, not as a script)
+export function maybeDiscoverLocation(
+  game: Game,
+  locationId: string,
+  difficulty: number = 0,
+  message: string
+): boolean {
+  // Check if location is already discovered
+  const gameLocation = game.locations.get(locationId)
+  const isDiscovered = gameLocation ? gameLocation.discovered : false
+  
+  if (isDiscovered) {
+    return false // Already discovered, nothing to do
+  }
+  
+  // Attempt Perception skill check
+  const perceptionCheck = game.player.skillTest('Perception', difficulty)
+  if (perceptionCheck) {
+    // Discover the location
+    game.run('discoverLocation', {
+      location: locationId,
+      text: message,
+      colour: '#3b82f6',
+    })
+    return true // Location was discovered
+  }
+  
+  return false // Location not discovered this time
+}

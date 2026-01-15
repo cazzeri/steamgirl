@@ -6,6 +6,7 @@ import './story/Utility'
 import './story/Start'
 import './story/Effects'
 import './story/Lodgings' // Register lodgings scripts
+import './story/Lowtown' // Register lowtown location and NPCs
 
 const rootElement = document.getElementById('root')
 

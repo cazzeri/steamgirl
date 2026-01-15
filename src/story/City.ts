@@ -3,7 +3,7 @@ import type { LocationId, LocationDefinition } from '../model/Location'
 import { option } from '../model/Format'
 import { makeScripts } from '../model/Scripts'
 import { Item } from '../model/Item'
-import { NPC, registerNPC } from '../model/NPC'
+import { maybeDiscoverLocation } from './Utility'
 
 // Location definitions for the city of Aetheria
 // These are the standard locations. Others might be added elsewhere
@@ -82,7 +82,7 @@ export const LOCATION_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     name: 'Backstreets',
     description: 'The winding alleys and hidden passages of the city, where secrets lurk in the shadows.',
     image: '/images/backstreet.jpg',
-    links: [{ dest: 'default', time: 5 }, { dest: 'market', time: 5 }], // 5 minutes to city centre, 5 minutes to market
+    links: [{ dest: 'default', time: 5 }, { dest: 'market', time: 5 }, { dest: 'lowtown', time: 5 }], // 5 minutes to city centre, 5 minutes to market, 5 minutes to lowtown
     activities: [
       {
         name: 'Go to Lodgings',
@@ -96,6 +96,16 @@ export const LOCATION_DEFINITIONS: Record<LocationId, LocationDefinition> = {
         script: (g: Game, _params: {}) => {
           // Advance time by 10 minutes (600 seconds)
           g.run('timeLapse', { seconds: 10 * 60 })
+          
+          // Attempt to discover Lowtown - if discovered, stop exploration
+          if (maybeDiscoverLocation(
+            g,
+            'lowtown',
+            0,
+            'While exploring the backstreets, you discover a hidden path leading downward. The air grows heavier with the smell of industry and steam. You\'ve found your way to Lowtown.'
+          )) {
+            return // Stop exploration if location is discovered
+          }
           
           // Random encounters for the backstreets
           const encounters = [
@@ -135,9 +145,15 @@ export const LOCATION_DEFINITIONS: Record<LocationId, LocationDefinition> = {
           // Advance time by 10 minutes (600 seconds)
           g.run('timeLapse', { seconds: 10 * 60 })
           
-          // Check if Lake is already discovered
-          const lakeLocation = g.locations.get('lake')
-          const isLakeDiscovered = lakeLocation ? lakeLocation.discovered : false
+          // Attempt to discover the Lake - if discovered, stop exploration
+          if (maybeDiscoverLocation(
+            g,
+            'lake',
+            0,
+            'Through the university windows, you catch a glimpse of something serene in the distance—a lake with steam gently rising from its surface. You make a mental note of how to reach it.'
+          )) {
+            return // Stop exploration if location is discovered
+          }
           
           // Random encounters for the University grounds (outisde)
           const encounters = [
@@ -155,19 +171,6 @@ export const LOCATION_DEFINITIONS: Record<LocationId, LocationDefinition> = {
           
           const randomEncounter = encounters[Math.floor(Math.random() * encounters.length)]
           g.add(randomEncounter)
-          
-          // Chance to discover the Lake based on Perception skill check (difficulty 0)
-          if (!isLakeDiscovered) {
-            const perceptionCheck = g.player.skillTest('Perception', 0)
-            if (perceptionCheck) {
-              // Discover the Lake
-              g.run('discoverLocation', {
-                location: 'lake',
-                text: 'Through the university windows, you catch a glimpse of something serene in the distance—a lake with steam gently rising from its surface. You make a mental note of how to reach it.',
-                colour: '#3b82f6',
-              })
-            }
-          }
         },
       },
     ],
@@ -191,9 +194,15 @@ export const LOCATION_DEFINITIONS: Record<LocationId, LocationDefinition> = {
           // Advance time by 10 minutes (600 seconds)
           g.run('timeLapse', { seconds: 10 * 60 })
           
-          // Check if Lake is already discovered
-          const lakeLocation = g.locations.get('lake')
-          const isLakeDiscovered = lakeLocation ? lakeLocation.discovered : false
+          // Attempt to discover the Lake - if discovered, stop exploration
+          if (maybeDiscoverLocation(
+            g,
+            'lake',
+            0,
+            'While exploring the market, you overhear a conversation about a peaceful lake nearby. Someone mentions the path that leads to it, and you commit the directions to memory.'
+          )) {
+            return // Stop exploration if location is discovered
+          }
           
           // Random encounters for the Market
           const encounters = [
@@ -211,19 +220,6 @@ export const LOCATION_DEFINITIONS: Record<LocationId, LocationDefinition> = {
           
           const randomEncounter = encounters[Math.floor(Math.random() * encounters.length)]
           g.add(randomEncounter)
-          
-          // Chance to discover the Lake based on Perception skill check (difficulty 0)
-          if (!isLakeDiscovered) {
-            const perceptionCheck = g.player.skillTest('Perception', 0)
-            if (perceptionCheck) {
-              // Discover the Lake
-              g.run('discoverLocation', {
-                location: 'lake',
-                text: 'While exploring the market, you overhear a conversation about a peaceful lake nearby. Someone mentions the path that leads to it, and you commit the directions to memory.',
-                colour: '#3b82f6',
-              })
-            }
-          }
         },
       },
       {

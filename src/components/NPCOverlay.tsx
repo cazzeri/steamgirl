@@ -28,11 +28,16 @@ export function NPCOverlay() {
         const npc = game.getNPC(npcId)
         const npcDef = npc.template
         
+        // Show name if known, otherwise show description
+        const displayName = npc.nameKnown && npcDef.name 
+          ? npcDef.name 
+          : (npcDef.description || npcDef.name || npcId)
+        
         return (
           <Thumbnail
             key={npcId}
             image={npcDef.image}
-            name={npcDef.name || npcId}
+            name={displayName}
             symbol="👤"
             onClick={() => handleNPCClick(npcId)}
             title={npcDef.description || npcDef.name || npcId}

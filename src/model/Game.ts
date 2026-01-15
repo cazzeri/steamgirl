@@ -1,6 +1,6 @@
 import { Player, type PlayerData } from './Player'
 import { Location, type LocationData, getLocation as getLocationDefinition } from './Location'
-import { NPC, type NPCData, getNPCDefinition } from './NPC'
+import { NPC, type NPCData, getNPCDefinition, getAllNPCIds } from './NPC'
 import { runScript as runScriptImpl } from './Scripts'
 import { Card } from './Card'
 
@@ -246,14 +246,23 @@ export class Game {
   /**
    * Update npcsPresent list based on NPC locations matching current location.
    * Should be called after NPC movement or location changes.
+   * Generates NPCs that haven't been created yet to check if they should be present.
    */
   updateNPCsPresent(): void {
     this.npcsPresent = []
-    this.npcs.forEach((npc, npcId) => {
+    
+    // TODO: consider refactoring this, so we can avoid generating NPCs that are not yet needed
+    // Check all registered NPCs - generate them if needed to check their location
+    const allNPCIds = getAllNPCIds()
+    for (const npcId of allNPCIds) {
+      // Get NPC (will generate if needed, which calls onMove to position it)
+      const npc = this.getNPC(npcId)
+      
+      // Check if NPC is at current location
       if (npc.location === this.currentLocation) {
         this.npcsPresent.push(npcId)
       }
-    })
+    }
   }
 
   /** Clear the current scene (resets content and options). */

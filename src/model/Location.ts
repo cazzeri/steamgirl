@@ -1,11 +1,13 @@
 import type { Script } from "./Scripts"
 import { LOCATION_DEFINITIONS as CITY_DEFINITIONS } from "../story/City"
 import { LODGINGS_DEFINITIONS } from "../story/Lodgings"
+import { LOWTOWN_DEFINITIONS } from "../story/Lowtown"
 
 // Combine all location definitions
 const LOCATION_DEFINITIONS: Record<string, LocationDefinition> = {
   ...CITY_DEFINITIONS,
   ...LODGINGS_DEFINITIONS,
+  ...LOWTOWN_DEFINITIONS,
 }
 
 export type LocationId = string

@@ -8,6 +8,7 @@ export interface NPCData {
   id?: NPCId
   approachCount?: number
   location?: string | null
+  nameKnown?: boolean // Whether the player knows the NPC's name
 }
 
 // Static / library information for an NPC
@@ -28,11 +29,13 @@ export class NPC {
   id: NPCId
   approachCount: number
   location: string | null
+  nameKnown: boolean // Whether the player knows the NPC's name
 
   constructor(id: NPCId) {
     this.id = id
     this.approachCount = 0
     this.location = null
+    this.nameKnown = false // Names are unknown by default
   }
 
   /**
@@ -82,6 +85,7 @@ export class NPC {
       id: this.id,
       approachCount: this.approachCount,
       location: this.location,
+      nameKnown: this.nameKnown,
     }
   }
 
@@ -110,6 +114,7 @@ export class NPC {
     // Apply serialized mutable state (overrides any values set by generate)
     npc.approachCount = data.approachCount ?? 0
     npc.location = data.location ?? null
+    npc.nameKnown = data.nameKnown ?? false
     
     return npc
   }
@@ -127,4 +132,9 @@ export function registerNPC(id: NPCId, definition: NPCDefinition): void {
 // Get an NPC definition by id
 export function getNPCDefinition(id: NPCId): NPCDefinition | undefined {
   return NPC_DEFINITIONS[id]
+}
+
+// Get all registered NPC IDs
+export function getAllNPCIds(): NPCId[] {
+  return Object.keys(NPC_DEFINITIONS)
 }
