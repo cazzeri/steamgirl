@@ -1,7 +1,7 @@
 :root {
   /* Design tokens / color system */
   --bg-main: #0e0b09; /* deep soot / iron */
-  --bg-panel: rgba(34, 24, 16, 0.9); /* dark brass panel */
+  --bg-panel: rgba(34, 24, 16); /* dark brass panel */
   --bg-panel-soft: rgba(88, 57, 33, 0.25); /* soft copper wash */
   --bg-placeholder: radial-gradient(circle at 0 0, rgba(255, 176, 59, 0.16), transparent 60%),
     radial-gradient(circle at 100% 100%, rgba(146, 79, 46, 0.2), transparent 55%),
@@ -133,6 +133,7 @@ img {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 
 .avatar-frame {
@@ -166,6 +167,35 @@ img {
   height: 256px;
   object-fit: cover;
   border-radius: var(--radius-md);
+}
+
+/* Status effect tags overlay on avatar */
+.avatar-effects-overlay {
+  position: absolute;
+  top: 2rem;
+  left: var(--space-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 40%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.effect-tag {
+  font-size: 1rem;
+  padding: 0.2rem;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  pointer-events: auto; /* Enable tooltips even when parent has pointer-events: none */
+  cursor: help; /* Indicate that tooltip is available */
 }
 
 /* Decorative corner rivets */
