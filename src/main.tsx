@@ -1,7 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { GameScreen } from './GameScreen'
+import { App } from './App'
 import './style.css'
+import './story/Utility'
+import './story/Start'
+import './story/Effects'
+import './story/Lodgings' // Register lodgings scripts
 
 const rootElement = document.getElementById('root')
 
@@ -11,7 +15,7 @@ if (!rootElement) {
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <GameScreen />
+    <App />
   </React.StrictMode>,
 )
 
