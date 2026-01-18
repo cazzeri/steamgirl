@@ -1,6 +1,7 @@
 import { Item } from '../model/Item'
 import { Tooltip } from './Tooltip'
 import { capitalise } from '../model/Text'
+import { assetUrl } from '../utils/assetUrl'
 
 type ItemViewProps = {
   item: Item
@@ -17,7 +18,7 @@ export function ItemView({ item, selected = false, onClick }: ItemViewProps) {
     <div className="item-icon-container">
       {itemDef.image ? (
         <img 
-          src={itemDef.image} 
+          src={assetUrl(itemDef.image)} 
           alt={itemDef.name}
           className="item-icon"
           style={{ width: `${iconSize}px`, height: `${iconSize}px` }}

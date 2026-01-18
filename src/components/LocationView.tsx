@@ -4,6 +4,7 @@ import { ActivityOverlay } from './ActivityOverlay'
 import { NPCOverlay } from './NPCOverlay'
 import { Location } from '../model/Location'
 import { useGame } from '../context/GameContext'
+import { assetUrl } from '../utils/assetUrl'
 
 interface LocationViewProps {
   location: Location
@@ -45,7 +46,7 @@ export function LocationView({ location }: LocationViewProps) {
         display: 'flex',
         flexDirection: 'column',
         ...(locationImage && {
-          backgroundImage: `url(${locationImage})`,
+          backgroundImage: `url(${assetUrl(locationImage)})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',

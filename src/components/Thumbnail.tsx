@@ -1,3 +1,5 @@
+import { assetUrl } from '../utils/assetUrl'
+
 interface ThumbnailProps {
   image?: string
   name: string
@@ -21,7 +23,7 @@ export function Thumbnail({ image, name, subtitle, symbol, onClick, title, disab
     >
       {image ? (
         <img
-          src={image}
+          src={assetUrl(image)}
           alt={name}
           className="thumbnail-image"
         />

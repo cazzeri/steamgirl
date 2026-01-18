@@ -8,6 +8,7 @@ import { Game } from '../model/Game'
 import { Card } from './Card'
 import { StatsPanel } from './StatsPanel'
 import { EffectTag } from './EffectTag'
+import { assetUrl } from '../utils/assetUrl'
 
 type TabId = 'Status' | 'Inventory' | 'Quests' | 'Skills' | 'Settings'
 
@@ -74,7 +75,7 @@ export function PlayerPanel() {
           <div className="avatar-rivet avatar-rivet-br"></div>
           <div className="avatar-placeholder">
             <img 
-              src="/girl/SteamGirl.png" 
+              src={assetUrl('/girl/SteamGirl.png')} 
               alt="Player Avatar"
             />
           </div>
