@@ -1,4 +1,5 @@
 import { Card as CardModel } from '../model/Card'
+import { assetUrl } from '../utils/assetUrl'
 
 type CardProps = {
   card: CardModel
@@ -27,7 +28,7 @@ export function Card({ card }: CardProps) {
     <div className="card-component">
       {cardDef.image && (
         <div className="card-image">
-          <img src={cardDef.image} alt={cardDef.name} />
+          <img src={assetUrl(cardDef.image)} alt={cardDef.name} />
         </div>
       )}
       <div className="card-content">
