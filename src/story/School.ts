@@ -48,8 +48,6 @@ const SCHOOL_DEFINITIONS: Record<LocationId, LocationDefinition> = {
 export const universityScripts = {
   // Scene 1: Start induction at university grounds
   universityInduction: (game: Game, _params: {}) => {
-    game.clearScene()
-    
     game.add('You approach the university administration office, where a stern-looking administrator with mechanical spectacles reviews your acceptance letter.')
     game.add('"Ah, you\'re the new student," she says, her voice carrying the precision of well-oiled gears. "Welcome to the University of Aetheria. Your induction begins now."')
     game.add('"Follow me, and I\'ll show you the facilities." She leads you through the grand entrance.')
@@ -63,8 +61,6 @@ export const universityScripts = {
   
   // Scene 2: Move to hallway
   inductionHallway: (game: Game, _params: {}) => {
-    game.clearScene()
-    
     // Move to hallway
     game.run('move', { location: 'hallway' })
     
@@ -77,8 +73,6 @@ export const universityScripts = {
   
   // Scene 3: Move to great hall
   inductionGreatHall: (game: Game, _params: {}) => {
-    game.clearScene()
-    
     // Move to great hall
     game.run('move', { location: 'great-hall' })
     
@@ -91,8 +85,6 @@ export const universityScripts = {
   
   // Scene 4: Move to classroom
   inductionClassroom: (game: Game, _params: {}) => {
-    game.clearScene()
-    
     // Move to classroom
     game.run('move', { location: 'classroom' })
     
@@ -105,8 +97,6 @@ export const universityScripts = {
   
   // Scene 5: Complete induction back in hallway
   inductionComplete: (game: Game, _params: {}) => {
-    game.clearScene()
-    
     // Move back to hallway
     game.run('move', { location: 'hallway' })
     

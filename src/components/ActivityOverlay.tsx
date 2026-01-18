@@ -33,19 +33,12 @@ export function ActivityOverlay() {
   const handleActivityClick = (activity: LocationActivity) => {
     if (!game) return
     
-    // Clear the scene before running the script
+    // Follow the game loop pattern: clear scene, run script, then afterAction
+    // Activities use script functions directly, not script names, so we can't use takeAction
+    // But we follow the same pattern
     game.clearScene()
-    
-    // Run the script (may modify game state)
     activity.script(game, {})
-    
-    // Run afterUpdate scripts for all cards
-    game.player.cards.forEach(card => {
-      const cardDef = card.template
-      if (cardDef.afterUpdate) {
-        cardDef.afterUpdate(game, {})
-      }
-    })
+    game.afterAction()
     
     // Trigger a React update by deserializing/reserializing to create a new reference
     // This forces re-render so the UI reflects the script changes

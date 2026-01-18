@@ -36,8 +36,6 @@ registerNPC('commuter', {
       [18, 19, 'station'],   // Evening rush hour
     ]
     npc.followSchedule(game, schedule)
-    // Update npcsPresent after NPC moves
-    game.updateNPCsPresent()
   },
 })
 

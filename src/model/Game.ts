@@ -1,7 +1,7 @@
 import { Player, type PlayerData } from './Player'
 import { Location, type LocationData, getLocation as getLocationDefinition } from './Location'
 import { NPC, type NPCData, getNPCDefinition } from './NPC'
-import { runScript as runScriptImpl } from './Scripts'
+import { getScript } from './Scripts'
 import { Card } from './Card'
 
 export type ParagraphContent = 
@@ -32,10 +32,20 @@ export interface GameData {
   time: number
 }
 
-/** Main game state container that manages version, score, and player data with JSON serialization support. 
+/** 
+ * Main game state object that represents the current state of the game with JSON serialization support. 
  * 
- * Standard game loop:
- * 
+ * Standard Game loop (given a starting  / loaded state):
+ * 1. beforeAction() called to set up any fields needed to present actions to the player (i.e. not present in the game state object)
+ *    - Must be idempotent / transient
+ * 2. takeAction(scriptName, params) called to implement the player action
+ *    - clear current scene
+ *    - run script fort player action
+ *    - update player state
+ * 3. afterAction() runs everything else that needs to be done after the action
+ *    - run any card effects that might change game state / trigger a new scene
+ *    - move any NPCs
+ * 4. Go back to step 1
  * 
 */
 export class Game {
@@ -181,9 +191,60 @@ export class Game {
     return this
   }
 
+  /** 
+   * Set up any transient fields needed to present actions to the player.
+   * Must be idempotent - can be called multiple times with the same result.
+   * Called before presenting actions to the player.
+   */
+  beforeAction(): void {
+    // Update npcsPresent list based on current location
+    // This is transient data not stored in game state
+    this.updateNPCsPresent()
+  }
+
+  /** 
+   * Implement a player action by running a script.
+   * - Clears the current scene
+   * - Runs the script for the player action
+   * - Updates player state (handled by script)
+   */
+  takeAction(scriptName: string, params: {} = {}): void {
+    // Clear the scene before running a new script
+    this.clearScene()
+    
+    // Get and run the script (may modify game state)
+    const script = getScript(scriptName)
+    if (!script) {
+      throw new Error(`Player action script not found: ${scriptName}`)
+    }
+    script(this, params)
+  }
+
+  /** 
+   * Run everything that needs to happen after an action.
+   * - Run any card effects that might change game state / trigger a new scene
+   * - Move any NPCs (if needed)
+   */
+  afterAction(): void {
+    // Run afterUpdate scripts for all cards
+    this.player.cards.forEach(card => {
+      const cardDef = card.template
+      if (cardDef.afterUpdate) {
+        cardDef.afterUpdate(this, {})
+      }
+    })
+    
+    // Note: NPC movement is handled by timeLapse script when hour changes
+    // If we need to check NPC positions after actions, it would go here
+  }
+
   /** Run a script on this game instance. Returns this for fluent chaining. */
   run(scriptName: string, params: {} = {}): this {
-    runScriptImpl(scriptName, this, params)
+    const script = getScript(scriptName)
+    if (!script) {
+      throw new Error(`Script not found: ${scriptName}`)
+    }
+    script(this, params)
     return this
   }
 

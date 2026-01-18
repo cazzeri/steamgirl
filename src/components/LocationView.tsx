@@ -11,6 +11,12 @@ interface LocationViewProps {
 
 export function LocationView({ location }: LocationViewProps) {
   const { game } = useGame()
+  
+  // Call beforeAction to set up transient fields (like npcsPresent) before rendering
+  if (game) {
+    game.beforeAction()
+  }
+  
   const template = location.template
   
   // Determine which image to use based on time

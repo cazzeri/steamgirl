@@ -25,11 +25,3 @@ export function getAllScripts(): Record<string, Script> {
   return { ...SCRIPTS }
 }
 
-export function runScript(name: string, game: Game, params: {} = {}): any {
-  const script = getScript(name)
-  if (!script) {
-    throw new Error(`Script not found: ${name}`)
-  }
-  return script(game, params)
-}
-
