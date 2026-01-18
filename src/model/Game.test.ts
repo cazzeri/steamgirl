@@ -1,9 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { Game } from './Game'
 import { Item } from './Item'
-import '../story/Effects' // Register effect definitions
-import '../story/Start' // Register start scripts
-import '../story/Utility' // Register utility scripts
+import { registerNPC } from './NPC'
+import '../story/World' // Register all story content (locations, NPCs, cards, scripts)
 
 describe('Game', () => {
   it('should create a new Game', () => {
@@ -139,5 +138,147 @@ describe('Game', () => {
     expect(agility).toBeDefined()
     expect(agility!).toBeGreaterThan(10)
     expect(agility).toBe(30) // Should be exactly 30
+  })
+
+  it('should generate NPC correctly when getNPC is called', () => {
+    const game = new Game()
+    
+    // Initially, NPC should not exist in map
+    expect(game.npcs.has('test-npc')).toBe(false)
+    
+    // Get NPC - should generate it
+    const npc = game.getNPC('test-npc')
+    
+    // NPC should now exist in map
+    expect(game.npcs.has('test-npc')).toBe(true)
+    expect(npc.id).toBe('test-npc')
+    expect(npc.template.name).toBe('Test NPC')
+    expect(npc.template.description).toBe('A test NPC for testing purposes.')
+  })
+
+  it('should return same NPC instance on subsequent getNPC calls', () => {
+    const game = new Game()
+    
+    const npc1 = game.getNPC('test-npc')
+    const npc2 = game.getNPC('test-npc')
+    
+    // Should return the same instance
+    expect(npc1).toBe(npc2)
+  })
+
+  it('should serialize and deserialize NPCs correctly', () => {
+    const game = new Game()
+    
+    // Generate an NPC
+    game.getNPC('test-npc')
+    
+    // Serialize and deserialize
+    const gameData = game.toJSON()
+    const reloadedGame = Game.fromJSON(gameData)
+    
+    // NPC should be restored
+    expect(reloadedGame.npcs.has('test-npc')).toBe(true)
+    const reloadedNPC = reloadedGame.getNPC('test-npc')
+    expect(reloadedNPC.id).toBe('test-npc')
+    expect(reloadedNPC.template.name).toBe('Test NPC')
+  })
+
+  it('should run onApproach script when approaching an NPC', () => {
+    const game = new Game()
+    
+    // Approach the test NPC
+    game.run('approach', { npc: 'test-npc' })
+    
+    // Check that approachCount was incremented
+    const npc = game.getNPC('test-npc')
+    expect(npc.approachCount).toBe(1)
+    
+    // Check that the scene contains the expected message
+    const hasMessage = game.scene.content.some(item => {
+      if (item.type === 'text') {
+        return item.text.includes('Test NPC says:')
+      }
+      if (item.type === 'paragraph') {
+        return item.content.some(c => c.type === 'text' && c.text.includes('Test NPC says:'))
+      }
+      return false
+    })
+    expect(hasMessage).toBe(true)
+  })
+
+  it('should show default message when NPC has no onApproach script', () => {
+    const game = new Game()
+    
+    // Create a test NPC without onApproach - register it inline
+    registerNPC('silent-npc', {
+      name: 'Silent NPC',
+      description: 'An NPC that doesn\'t want to talk.',
+      // generate is optional - using default NPC instance
+      // No onApproach script
+    })
+    
+    // Approach the silent NPC
+    game.run('approach', { npc: 'silent-npc' })
+    
+    // Check that approachCount was incremented
+    const npc = game.getNPC('silent-npc')
+    expect(npc.approachCount).toBe(1)
+    
+    // Check that the scene contains the default message
+    const hasDefaultMessage = game.scene.content.some(item => {
+      if (item.type === 'text') {
+        return item.text.includes("isn't interested in talking to you")
+      }
+      if (item.type === 'paragraph') {
+        return item.content.some(c => c.type === 'text' && c.text.includes("isn't interested in talking to you"))
+      }
+      return false
+    })
+    expect(hasDefaultMessage).toBe(true)
+  })
+
+  it('should increment approachCount on multiple approaches', () => {
+    const game = new Game()
+    
+    const npc = game.getNPC('test-npc')
+    expect(npc.approachCount).toBe(0)
+    
+    // Approach multiple times
+    game.run('approach', { npc: 'test-npc' })
+    expect(npc.approachCount).toBe(1)
+    
+    game.run('approach', { npc: 'test-npc' })
+    expect(npc.approachCount).toBe(2)
+    
+    game.run('approach', { npc: 'test-npc' })
+    expect(npc.approachCount).toBe(3)
+  })
+
+  it('should have spice dealer present in lowtown at 1am', () => {
+    const game = new Game()
+    
+    // Set time to 1am (01:00) on January 5, 1902
+    // JavaScript Date: year, month (0-indexed), day, hours, minutes, seconds
+    const oneAmDate = new Date(1902, 0, 5, 1, 0, 0)
+    game.time = Math.floor(oneAmDate.getTime() / 1000)
+    
+    // Ensure lowtown location exists and is discovered
+    const lowtownLocation = game.getLocation('lowtown')
+    lowtownLocation.discovered = true
+    
+    // Move player to lowtown
+    game.moveToLocation('lowtown')
+    
+    // Get the spice dealer NPC (this will trigger onMove and position it)
+    const spiceDealer = game.getNPC('spice-dealer')
+    
+    // Check that spice dealer's location is lowtown
+    expect(spiceDealer.location).toBe('lowtown')
+    
+    // Update npcsPresent to reflect current NPC locations
+    game.updateNPCsPresent()
+    
+    // Check that spice dealer is in npcsPresent
+    expect(game.npcsPresent).toContain('spice-dealer')
   })
 })

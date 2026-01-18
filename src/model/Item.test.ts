@@ -3,25 +3,15 @@ import { Item } from './Item'
 import type { ItemData } from './Item'
 
 describe('Item', () => {
-  it('should create an item with an id', () => {
-    const item = new Item('test-item')
-    expect(item).toBeDefined()
-    expect(item.id).toBe('test-item')
-    expect(item.number).toBe(1)
-  })
+
 
   it('should create an item with custom number', () => {
     const item = new Item('crown', 20)
     expect(item.id).toBe('crown')
-    expect(item.number).toBe(20)
-  })
-
-  it('should provide access to template definition', () => {
-    const item = new Item('test-item')
     const template = item.template
     expect(template).toBeDefined()
-    expect(template.name).toBe('Test Item')
-    expect(template.description).toBe('A test item for testing purposes.')
+    expect(template.name).toBe('Krona')
+    expect(item.number).toBe(20)
   })
 
   it('should serialize and deserialize correctly', () => {

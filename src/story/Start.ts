@@ -3,8 +3,41 @@ import { makeScripts } from '../model/Scripts'
 import { option, p, highlight } from '../model/Format'
 import type { CardDefinition } from '../model/Card'
 import { registerCardDefinition } from '../model/Card'
+import { NPC, registerNPC } from '../model/NPC'
 import '../story/Effects' // Register effect definitions
 import '../story/Lodgings' // Register lodgings scripts
+
+// Register NPCs that appear at the station
+registerNPC('automaton-greeter', {
+  name: 'Automaton Greeter',
+  description: 'A brass-plated automaton that greets visitors to the station.',
+  generate: (_game: Game, npc: NPC) => {
+    // Set initial location to station
+    npc.location = 'station'
+  },
+  onApproach: (game: Game) => {
+    game.add('The automaton greeter clicks and whirs, its brass voicebox producing a mechanical greeting: "Welcome to Ironspark Terminus. How may I assist you today?"')
+  },
+})
+
+registerNPC('commuter', {
+  name: 'Commuter',
+  description: 'A regular commuter waiting at the station.',
+  // generate is optional - using default NPC instance
+  onApproach: (game: Game) => {
+    game.add('The commuter looks up from their pocket watch, giving you a brief nod before returning their attention to the station clock.')
+  },
+  onMove: (game: Game) => {
+    const npc = game.getNPC('commuter')
+    // Update location based on schedule when hour changes
+    const schedule: [number, number, string][] = [
+      [6, 7, 'station'],    // Morning rush hour
+      [17, 18, 'default'],    // Heading home
+      [18, 19, 'station'],   // Evening rush hour
+    ]
+    npc.followSchedule(game, schedule)
+  },
+})
 
 export const startScripts = {
   init: (g: Game) => {
@@ -36,6 +69,16 @@ export const startScripts = {
     g.run('gainItem', { item: 'magic-potion', number: 1 })
     g.run('gainItem', { item: 'fun-juice', number: 1 })
     
+    // Generate NPCs that should be present at the start
+    g.getNPC('automaton-greeter')
+    g.getNPC('commuter')
+    
+    // Update npcsPresent after generating NPCs
+    g.updateNPCsPresent()
+    
+    // Add initial quest
+    g.addQuest('attend-university', {silent: true})
+    
     // Move on to start script
     g.run('start', {})
   },
@@ -53,18 +96,19 @@ export const startScripts = {
     .add('Coal smoke curls around your ankles like fingers. The station cathedral looms above: brass vertebrae, glass skin revealing grinding intestines of gear and piston. Somewhere a valve releases steam that tastes faintly of iron and skin.')
     .add(p('You are here. Alone. The ', highlight('acceptance letter', '#fbbf24', 'You managed to get accepted by the most prestigious University in Aetheria! A remarkable achievement for a country girl like you.'), ' pressed against your is your only connection to this place.'))
     .add(option('whatNow', {}, 'What Now?'))
+    // add find-lodgings tutorial quest
+    .addQuest('find-lodgings', {})
   },
 
   whatNow: (g: Game) => {
     g.add(p('You have a room booked in the ', highlight('backstreets', '#fbbf24', 'Not the most prestigious part of the city, but its the best we could afford.')," area. Might be a good idea to check it out first."))
     .add("It's tempting to explore the city and get to know your new home. You could explore yourself and find your way to your room. Or there is a guided tour of the city that you could take for about an hour, which ends in the backstreets.")
-    .addQuest('find-lodgings', {})
     .add(option('startExploring', {}, 'Explore'))
     .add(option('tourCity', {}, 'Tour the City'))
   },
   
   startExploring: (g: Game) => {
-    g.add('You decide to start your exploration at the station. The world is at your feet!')
+    g.add('The world is at your feet!')
     // Player can now navigate and explore from the station
   },
   
@@ -114,8 +158,38 @@ export const findLodgingsQuest: CardDefinition = {
   },
 }
 
-// Register the quest definition
+// Register the find-lodgings quest definition
 registerCardDefinition('find-lodgings', findLodgingsQuest)
+
+// Register the attend-university quest definition
+export const attendUniversityQuest: CardDefinition = {
+  name: 'Attend University',
+  description: 'Important! Be at the university between 8-10am on 6th Jan for Induction.',
+  type: 'Quest',
+  afterUpdate: (game: Game, _params: {}) => {
+    const quest = game.player.cards.find(card => card.id === 'attend-university')
+    if (!quest || quest.completed || quest.failed) {
+      return // Already completed or failed
+    }
+    
+    // Check if it's past 10am on Jan 6th, 1902
+    const currentDate = game.date
+    const inductionDate = new Date(1902, 0, 6, 10, 0, 0) // Jan 6, 1902, 10:00am
+    
+    if (currentDate >= inductionDate) {
+      // Time has passed - check if quest was completed
+      const hallwayLocation = game.getLocation('hallway')
+      if (!hallwayLocation.discovered) {
+        // Player didn't attend - mark as failed
+        quest.failed = true
+        game.add({ type: 'text', text: 'You failed to attend University induction.... this could be bad....', color: '#ef4444' })
+      }
+    }
+  },
+}
+
+// Register the quest definition
+registerCardDefinition('attend-university', attendUniversityQuest)
 
 // Register all start scripts when module loads
 makeScripts(startScripts)

@@ -1,11 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { Game } from './Game'
-import { makeScript, runScript, clearScripts } from './Scripts'
+import { makeScript, getScript} from './Scripts'
 
 describe('Scripts', () => {
-  beforeEach(() => {
-    clearScripts()
-  })
 
   it('should run a script on a new Game', () => {
     // Register a simple test script
@@ -20,8 +17,10 @@ describe('Scripts', () => {
     // Create a new game
     const game = new Game()
 
-    // Run the script
-    const result = runScript('testScript', game, { testParam: 'value' })
+    // Get and run the script
+    const script = getScript('testScript')
+    expect(script).toBeDefined()
+    const result = script!(game, { testParam: 'value' })
 
     // Verify the script executed correctly
     expect(result).toBeDefined()

@@ -7,6 +7,7 @@ import { InventoryView } from './InventoryView'
 import { Game } from '../model/Game'
 import { Card } from './Card'
 import { StatsPanel } from './StatsPanel'
+import { EffectTag } from './EffectTag'
 
 type TabId = 'Status' | 'Inventory' | 'Quests' | 'Skills' | 'Settings'
 
@@ -20,7 +21,7 @@ export function PlayerPanel() {
   const renderTabContent = () => {
     switch (selectedTab) {
       case 'Status':
-        const effectCards = game?.player.cards.filter(card => card.type === 'Effect') || []
+        const effectCards = game?.player.cards.filter(card => card && card.type === 'Effect') || []
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
             <Clock />
@@ -30,15 +31,9 @@ export function PlayerPanel() {
               <div>
                 <h4 style={{ marginBottom: 'var(--space-sm)' }}>Effects</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
-                  {effectCards.map((card, index) => {
-                    const cardDef = card.template
-                    const color = (cardDef as any).color || '#ffffff'
-                    return (
-                      <div key={`${card.id}-${index}`} style={{ color }}>
-                        {cardDef.name}
-                      </div>
-                    )
-                  })}
+                  {effectCards.map((card, index) => (
+                    <EffectTag key={`${card.id}-${index}`} card={card} />
+                  ))}
                 </div>
               </div>
             )}
@@ -47,14 +42,14 @@ export function PlayerPanel() {
       case 'Inventory':
         return <InventoryView />
       case 'Quests':
-        const questCards = game?.player.cards.filter(card => card.type === 'Quest') || []
+        const questCards = game?.player.cards.filter(card => card && card.type === 'Quest') || []
         if (questCards.length === 0) {
           return <p>No quests available.</p>
         }
         return (
           <div className="cards-container">
             {questCards.map((card, index) => (
-              <Card key={`${card.id}-${index}`} card={card} />
+              card ? <Card key={`${card.id}-${index}`} card={card} /> : null
             ))}
           </div>
         )
@@ -84,6 +79,18 @@ export function PlayerPanel() {
             />
           </div>
         </div>
+        {/* Status effect tags overlay - top left */}
+        {(() => {
+          const effectCards = game?.player.cards.filter(card => card && card.type === 'Effect') || []
+          if (effectCards.length === 0) return null
+          return (
+            <div className="avatar-effects-overlay">
+              {effectCards.map((card, index) => (
+                <EffectTag key={`${card.id}-${index}`} card={card} />
+              ))}
+            </div>
+          )
+        })()}
         {/* Player name overlay in bottom right */}
         <div style={{
           position: 'absolute',

@@ -9,7 +9,7 @@ import { NotFoundScreen } from './screens/NotFoundScreen';
 export function App() {
   return (
     <GameProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '') || '/'}>
         <Routes>
           <Route path="/" element={<RootRedirect />} />
           <Route path="/start" element={<StartScreen />} />

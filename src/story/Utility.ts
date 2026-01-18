@@ -7,23 +7,59 @@ import { colour } from '../model/Format'
 
 export const utilityScripts = {
   /* Advance the game's time by a given number of seconds
-  * Should not tigger any events, i.e. safe to 
+  * Should not trigger any events, i.e. safe to 
   * call from any script.
   */ 
   
-  timeLapse: (game: Game, params: { seconds?: number , minutes?: number } = {}) => {
-    const seconds = params.seconds ?? 0
-    const minutes = params.minutes ?? 0
+  timeLapse: (game: Game, params: { seconds?: number , minutes?: number, untilTime?: number } = {}) => {
+    let seconds = params.seconds ?? 0
+    let minutes = params.minutes ?? 0
+    
+    // If untilTime is provided (as hour of day, e.g., 10 or 10.25 for 10:15am)
+    if (params.untilTime !== undefined) {
+      if (typeof params.untilTime !== 'number') {
+        throw new Error('timeLapse untilTime must be a number (hour of day, e.g., 10 or 10.25)')
+      }
+      
+      const targetHour = params.untilTime
+      const currentHour = game.hourOfDay
+      
+      // Only advance if target is in the future on the same day
+      // Never cross a day boundary
+      if (currentHour < targetHour) {
+        const hoursDifference = targetHour - currentHour
+        seconds = Math.floor(hoursDifference * 3600) // Convert hours to seconds
+        minutes = 0 // Reset minutes since we're using total seconds
+      } else {
+        // Target has passed today, do nothing
+        seconds = 0
+        minutes = 0
+      }
+    }
+    
     if (typeof seconds !== 'number' || seconds < 0) {
       throw new Error('timeLapse requires a non-negative number of seconds')
     }
     if (typeof minutes !== 'number' || minutes < 0) {
       throw new Error('timeLapse requires a non-negative number of minutes')
     }
-    game.time += seconds + (minutes * 60)
     
     // Calculate total elapsed seconds for onTime callbacks
     const totalSeconds = seconds + (minutes * 60)
+    
+    // Get current hour before time change
+    const hourBefore = Math.floor(game.hourOfDay)
+    
+    // Advance time (if untilTime was in the past, we already set it above)
+    if (totalSeconds > 0) {
+      game.time += totalSeconds
+    }
+    
+    // Get current hour after time change
+    const hourAfter = Math.floor(game.hourOfDay)
+    
+    // Check if hour changed (e.g., 11:59 -> 12:01)
+    const hourChanged = hourBefore !== hourAfter
     
     // Call onTime for all player cards that have it
     if (totalSeconds > 0) {
@@ -36,6 +72,18 @@ export const utilityScripts = {
           cardDef.onTime(game, card, totalSeconds)
         }
       }
+    }
+    
+    // If hour changed, call onMove for all NPCs that have it
+    if (hourChanged) {
+      game.npcs.forEach((npc) => {
+        const npcDef = npc.template
+        if (npcDef.onMove && typeof npcDef.onMove === 'function') {
+          npcDef.onMove(game, {})
+        }
+      })
+      // Update npcsPresent after NPCs have moved
+      game.updateNPCsPresent()
     }
   },
   
@@ -60,7 +108,7 @@ export const utilityScripts = {
     game.player.addItem(itemId, number)
     
     // Recalculate stats after adding item (in case item has stat modifiers)
-    game.calcStats()
+    game.player.calcStats()
   },
   
   // Explore the current location - shows a random encounter
@@ -100,8 +148,8 @@ export const utilityScripts = {
     // Ensure location exists in game's locations map
     game.getLocation(locationId)
     
-    // Change current location
-    game.currentLocation = locationId
+    // Change current location and update NPCs present
+    game.moveToLocation(locationId)
   },
   
   // Navigate to a given location (checks links, triggers arrival scripts, time lapse, etc.)
@@ -127,6 +175,15 @@ export const utilityScripts = {
       const locationName = locationFromRegistry.name || locationId
       game.add(`You can't see a way to ${locationName}.`)
       return
+    }
+    
+    // Check access before allowing navigation
+    if (link.checkAccess) {
+      const accessReason = link.checkAccess(game)
+      if (accessReason) {
+        game.add(accessReason)
+        return
+      }
     }
     
     // Run onFollow script when navigating down a link (if set)
@@ -170,7 +227,7 @@ export const utilityScripts = {
   
   // Recalculate stats based on basestats and modifiers from active Items and Cards
   calcStats: (game: Game, _params: {}) => {
-    game.calcStats()
+    game.player.calcStats()
   },
   
   // Discover a location - sets discovered flag and optionally displays text
@@ -245,7 +302,7 @@ export const utilityScripts = {
     game.player.basestats.set(statName as StatName, newValue)
     
     // Recalculate stats after modifying base stat
-    game.calcStats()
+    game.player.calcStats()
     
     // Display text unless hidden
     if (!params.hidden) {
@@ -278,7 +335,67 @@ export const utilityScripts = {
       game.add(colour(displayText, displayColor))
     }
   },
+
+  // Approach an NPC to talk to them
+  approach: (game: Game, params: { npc?: string } = {}) => {
+    const npcId = params.npc
+    if (!npcId || typeof npcId !== 'string') {
+      throw new Error('approach script requires an npc parameter (string id)')
+    }
+
+    // Get the NPC instance (will generate if needed)
+    const npc = game.getNPC(npcId)
+    
+    // Increment approach count
+    npc.approachCount++
+    
+    // Player learns the NPC's name when they approach
+    npc.nameKnown = true
+
+    // Get the NPC definition
+    const npcDef = npc.template
+
+    // Check if the NPC has an onApproach script
+    if (npcDef.onApproach) {
+      // Run the onApproach script
+      npcDef.onApproach(game, {})
+    } else {
+      // Show default message
+      const npcName = npcDef.name || 'The NPC'
+      game.add(`${npcName} isn't interested in talking to you.`)
+    }
+  },
 }
 
 // Register all utility scripts when module loads
 makeScripts(utilityScripts)
+
+// Helper function for location discovery checks (can be called directly, not as a script)
+export function maybeDiscoverLocation(
+  game: Game,
+  locationId: string,
+  difficulty: number = 0,
+  message: string
+): boolean {
+  // Check if location is already discovered
+  const gameLocation = game.locations.get(locationId)
+  const isDiscovered = gameLocation ? gameLocation.discovered : false
+  
+  if (isDiscovered) {
+    return false // Already discovered, nothing to do
+  }
+  
+  // Attempt Perception skill check
+  const perceptionCheck = game.player.skillTest('Perception', difficulty)
+  if (perceptionCheck) {
+    // Discover the location
+    game.run('discoverLocation', {
+      location: locationId,
+      text: message,
+      colour: '#3b82f6',
+    })
+    return true // Location was discovered
+  }
+  
+  return false // Location not discovered this time
+}

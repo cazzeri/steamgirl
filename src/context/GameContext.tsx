@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from 'react'
 import { Game } from '../model/Game'
-import { runScript as runScriptImpl } from '../model/Scripts'
+import { getScript } from '../model/Scripts'
 
 type GameContextType = {
   game: Game | null
@@ -68,7 +68,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const newGame = () => {
     const newGameInstance = new Game()
     // Run init script when game is created
-    runScriptImpl('init', newGameInstance, {})
+    const initScript = getScript('init')
+    if (initScript) {
+      initScript(newGameInstance, {})
+    }
     setGame(newGameInstance)
     localStorage.setItem('gameSave', JSON.stringify(newGameInstance.toJSON()))
   }
@@ -96,28 +99,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
       throw new Error('Cannot run script: no game loaded')
     }
     
-    // Clear the scene before running a new script
-    game.clearScene()
+    // Take the action (clears scene, runs script)
+    game.takeAction(name, params)
     
-    // Run the script (may modify game state)
-    const result = runScriptImpl(name, game, params)
-    
-    // Run afterUpdate scripts for all cards
-    game.player.cards.forEach(card => {
-      const cardDef = card.template
-      if (cardDef.afterUpdate) {
-        cardDef.afterUpdate(game, {})
-      }
-    })
+    // Run after-action effects (card updates, NPC movement, etc.)
+    game.afterAction()
     
     // Trigger a React update by incrementing a counter
     // This forces re-render without serialization/deserialization
     setUpdateCounter(prev => prev + 1)
     
-    // Auto-save after script execution
+    // Auto-save after script execution (GUI/save logic stays in context)
     localStorage.setItem('gameSave', JSON.stringify(game.toJSON()))
-    
-    return result
   }
 
   return (

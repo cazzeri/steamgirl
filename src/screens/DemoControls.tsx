@@ -1,4 +1,4 @@
-import { MouseOver } from '../components/MouseOver'
+import { Tooltip } from '../components/Tooltip'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { useNavigate } from 'react-router-dom'
@@ -9,9 +9,9 @@ export function DemoControls() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '2rem', height: '100vh', width: '100vw', overflow: 'auto' }}>
       <div className="button-row">
-        <MouseOver
-          hoverContent={
-            <div className="hover-panel">
+        <Tooltip
+          content={
+            <div>
               <h2>Pressure Gauge</h2>
               <p className="text-muted">
                 Standard mouse-over demo. Replace this with game tooltips, item details, etc.
@@ -20,7 +20,7 @@ export function DemoControls() {
           }
         >
           <Button color="#f97316">Hover over this control</Button>
-        </MouseOver>
+        </Tooltip>
         <Card info={{ title: 'Card', description: 'Card description here' }} />
         <Button disabled>Disabled button</Button>
       </div>
