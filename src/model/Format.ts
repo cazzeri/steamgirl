@@ -28,7 +28,7 @@ export function colour(text: string, color: string): SceneContentItem {
 
 /** Creates a speech/dialogue content item: indented block with NPC-specific colour (e.g. for quoted dialogue). */
 export function speech(text: string, color?: string): SceneContentItem {
-  return { type: 'speech', text, color }
+  return { type: 'speech', text, color: color}
 }
 
 /** Creates a highlight span with color and optional mouseover content. */

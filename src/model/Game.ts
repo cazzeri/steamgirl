@@ -131,6 +131,15 @@ export class Game {
     this.updateNPCsPresent()
   }
 
+
+  /** Gets the current NPC. */
+  get npc(): NPC | null {
+    if (!this.scene.npc) {
+      return null
+    }
+    return this.npcs.get(this.scene.npc) ?? null
+  }
+
   /** Gets an NPC from the game's NPCs map, generating it if needed. Returns the NPC instance. */
   getNPC(npcId: string): NPC {
     // Check if NPC already exists

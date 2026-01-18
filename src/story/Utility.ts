@@ -3,7 +3,7 @@ import { makeScripts } from '../model/Scripts'
 import { getLocation } from '../model/Location'
 import { type StatName, type MeterName, MAIN_STAT_INFO, SKILL_INFO, METER_INFO } from '../model/Stats'
 import { capitalise } from '../model/Text'
-import { colour } from '../model/Format'
+import { colour, speech } from '../model/Format'
 
 export const utilityScripts = {
   /* Advance the game's time by a given number of seconds
@@ -339,6 +339,16 @@ export const utilityScripts = {
       if (actualChange !== 0) {
         game.add(colour(displayText, displayColor))
       }
+    }
+  },
+
+  // End the current NPC conversation with optional text (no options, so afterAction unsets scene.npc).
+  // Optional reply: NPC's response as speech, shown after the text.
+  endConversation: (game: Game, params: { text?: string; reply?: string } = {}) => {
+    const text = params.text ?? 'You politely end the conversation.'
+    game.add(text)
+    if (params.reply) {
+      game.add(speech(params.reply,game.npc?.template.speechColor ?? '#a8d4f0'))
     }
   },
 

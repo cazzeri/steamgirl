@@ -20,9 +20,30 @@ registerNPC('automaton-greeter', {
   onApproach: (game: Game) => {
     game.add('The automaton greeter clicks and whirs, its brass voicebox producing a mechanical greeting:')
       .add(speech('Welcome to Ironspark Terminus. How may I assist you today?'))
-    game.addOption('greeterSayGoodbye', {}, 'Say goodbye')
+    game.addOption('endConversation', { text:'The automaton whirs softly as you depart.', reply: 'Safe travels. May your gears never seize.' }, 'Say goodbye')
     game.addOption('greeterGetDirections', {}, 'Get directions')
     game.addOption('greeterFlirt', {}, 'Flirt')
+  },
+})
+
+registerNPC('tour-guide', {
+  name: 'Rob Hayes',
+  description: 'A friendly tour guide with a well-worn guidebook.',
+  speechColor: '#94a3b8',
+  generate: (_game: Game, npc: NPC) => {
+    npc.location = 'station'
+  },
+  onMove: (game: Game) => {
+    const npc = game.getNPC('tour-guide')
+    npc.followSchedule(game, [
+      [9, 18, 'station'],
+    ])
+  },
+  onApproach: (game: Game) => {
+    game.add('A man with a well-worn guidebook catches your eye and steps over with a warm smile.')
+    game.add(speech('Rob Hayes. I lead tours of the city for new arrivals. It takes about an hour and ends in the backstreets—handy if that\'s where you\'re headed. Fancy it?'))
+    game.addOption('tourCity', {}, 'Accept')
+    game.addOption('endConversation', { text: 'You politely decline the invitation.', reply: "Whenever you're ready. I'm usually here at the station." }, 'Decline')
   },
 })
 
@@ -80,6 +101,7 @@ export const startScripts = {
     
     // Generate NPCs that should be present at the start
     g.getNPC('automaton-greeter')
+    g.getNPC('tour-guide')
     g.getNPC('commuter')
     
     // Update npcsPresent after generating NPCs
@@ -108,10 +130,6 @@ export const startScripts = {
 
   },
 
-  greeterSayGoodbye: (g: Game) => {
-    g.add('The automaton whirs softly.')
-    g.add(speech('Safe travels. May your gears never seize.'))
-  },
 
   greeterFlirt: (g: Game) => {
     const success = g.player.skillTest('Flirtation', 0)
@@ -141,9 +159,8 @@ export const startScripts = {
     g.add(p('You have a room booked in the ', highlight('backstreets', '#fbbf24', 'Not the most prestigious part of the city, but its the best we could afford.')," area. Might be a good idea to check it out first."))
     // add find-lodgings tutorial quest
     g.addQuest('find-lodgings', {})
-    g.add("You could explore yourself and find your way to your room. Or there is a guided tour of the city that you could take for about an hour, which ends in the backstreets.")
-    .add(option('startExploring', {}, 'Explore'))
-    .add(option('tourCity', {}, 'Tour the City'))
+    g.add("You could explore yourself and find your way to your room. Or the tour guide here at the station offers city tours that end in the backstreets—you could ask him.")
+    g.add(option('startExploring', {}, 'Explore'))
   },
   
   startExploring: (g: Game) => {
@@ -152,35 +169,39 @@ export const startScripts = {
   },
   
   tourCity: (g: Game) => {
-    g.add('You decide to take a guided tour of the city, starting from the station where you arrived. Your guide approaches and offers to show you the key locations of Aetheria.')
-      .run('go', { location: 'default', minutes: 15 })
-      .add('The City Centre spreads before you in all its glory. Towering brass structures with visible gears and pipes reach toward the sky. Steam-powered carriages glide through cobblestone streets, while clockwork automatons serve the citizens. The air hums with the mechanical pulse of the city, and everywhere you look, there are wonders of engineering and artistry. This is Aetheria: awe-inspiring and magnificent.')
-      .add(option('tourUniversity', {}, 'Continue the Tour'))
+    g.scene.npc = 'tour-guide'
+    g.add('You set off with Rob.')
+    g.run('go', { location: 'default', minutes: 15 })
+    g.add(speech('Here we are—the heart of Aetheria. Magnificent, isn\'t it?'))
+    g.add('Towering brass structures with visible gears and pipes reach toward the sky. Steam-powered carriages glide through cobblestone streets, while clockwork automatons serve the citizens. The air hums with the mechanical pulse of the city.')
+    g.add(option('tourUniversity', {}, 'Continue the Tour'))
   },
-  
+
   tourUniversity: (g: Game) => {
     g.run('go', { location: 'school', minutes: 15 })
-      .add('The University stands as a testament to knowledge and innovation. Its grand brass doors open to reveal halls where you will study the mechanical arts, steam engineering, and the mysteries of clockwork. This is where your education begins, where you\'ll learn the skills that will shape your future in Aetheria.')
-      .add(option('tourLake', {}, 'Continue the Tour'))
+    g.add(speech('The University—where you\'ll be studying. A fine institution.'))
+    g.add('Its grand brass doors and halls where you will learn the mechanical arts, steam engineering, and the mysteries of clockwork.')
+    g.add(option('tourLake', {}, 'Continue the Tour'))
   },
-  
+
   tourLake: (g: Game) => {
     g.run('go', { location: 'lake', minutes: 18 })
-      .add('The Lake offers a peaceful respite from the mechanical bustle of the city. Steam gently rises from the surface, creating a serene mist. Here you can find moments of calm, a place to relax and reflect amidst the constant motion of Aetheria. It\'s a sanctuary where the mechanical and natural worlds blend beautifully.')
-      .add(option('tourMarket', {}, 'Continue the Tour'))
+    g.add(speech('The Lake. A peaceful spot when the city gets too much. Steam off the water—rather lovely.'))
+    g.add('Steam gently rises from the surface, creating a serene mist. A sanctuary where the mechanical and natural worlds blend.')
+    g.add(option('tourMarket', {}, 'Continue the Tour'))
   },
-  
+
   tourMarket: (g: Game) => {
     g.run('go', { location: 'market', minutes: 15 })
-      .add('The Market pulses with energy and excitement. Vendors display exotic mechanical trinkets, glowing brass devices, and intricate clockwork wonders. The air is filled with the sounds of haggling, the clinking of gears, and the hiss of steam. Every stall promises something fascinating—from precision tools to mysterious contraptions. This is where adventure and opportunity meet.')
-      .add('The market throbs. Vendors call in low, hungry voices. Brass toys whir and caress the air; clockwork serpents coil around wrists for sale. Fingers brush you as you pass — accidental, deliberate, promising.')
-      .add(option('tourBackstreets', {}, 'Continue the Tour'))
+    g.add(speech('The Market. Best place for oddities and curios. Keep your wits about you.'))
+    g.add('Vendors display exotic mechanical trinkets and clockwork wonders. The air is filled with haggling, the clink of gears, and the hiss of steam. The market throbs. Fingers brush you as you pass—accidental, deliberate, promising.')
+    g.add(option('tourBackstreets', {}, 'Continue the Tour'))
   },
-  
+
   tourBackstreets: (g: Game) => {
     g.run('go', { location: 'backstreets', minutes: 15 })
-    .add('The alleys close in, narrow and intimate. Gas lamps flicker like dying heartbeats. Somewhere above, gears moan. Somewhere below, something else answers.')
-    .add('Your room waits on the third floor')    // Tour complete - they can now explore from backstreets
+    g.add(speech('Sadly I must leave you here.Your room\'s in one of the buildings, I believe. Enjoy Aetheria.',g.npc?.template.speechColor)) // use colour because scene ends?
+    g.add('The alleys close in, narrow and intimate. Gas lamps flicker like dying heartbeats. Somewhere above, gears moan. Somewhere below, something else answers. Your room waits on the third floor.')
   },
 }
 
