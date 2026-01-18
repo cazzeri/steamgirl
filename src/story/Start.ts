@@ -29,6 +29,7 @@ registerNPC('automaton-greeter', {
 registerNPC('tour-guide', {
   name: 'Rob Hayes',
   description: 'A friendly tour guide with a well-worn guidebook.',
+  image: '/images/npcs/TourGuide.jpg',
   speechColor: '#94a3b8',
   generate: (_game: Game, npc: NPC) => {
     npc.location = 'station'
@@ -106,9 +107,7 @@ export const startScripts = {
     
     // Update npcsPresent after generating NPCs
     g.updateNPCsPresent()
-    
-    // Add initial quest
-    g.addQuest('attend-university', {silent: true})
+
     
     // Move on to start script
     g.run('start', {})
@@ -127,7 +126,16 @@ export const startScripts = {
     .add('Coal smoke curls around your ankles like fingers. The station cathedral looms above: brass vertebrae, glass skin revealing grinding intestines of gear and piston. Somewhere a valve releases steam that tastes faintly of iron and skin.')
     .add(p('You are here. Alone. The ', highlight('acceptance letter', '#fbbf24', 'You managed to get accepted by the most prestigious University in Aetheria! A remarkable achievement for a country girl like you.'), ' pressed against your is your only connection to this place.'))
     .add(option('whatNow', {}, 'What Now?'))
+    g.addQuest('attend-university')
 
+  },
+
+  whatNow: (g: Game) => {
+    g.add(p('You have a room booked in the ', highlight('backstreets', '#fbbf24', 'Not the most prestigious part of the city, but its the best we could afford.')," area. Might be a good idea to check it out first."))
+    // add find-lodgings tutorial quest
+    g.addQuest('find-lodgings', {})
+    g.add("You could explore yourself and find your way to your room. Or the tour guide here at the station offers city tours that end in the backstreets—you could ask him.")
+    g.add(option('endScene', {text: 'The world is at your feet!.'}, 'Explore'))
   },
 
 
@@ -154,22 +162,10 @@ export const startScripts = {
   greeterEndScene: (_g: Game, _params: {}) => {
     // No-op: takeAction has already cleared the scene; this just closes the overlay
   },
-
-  whatNow: (g: Game) => {
-    g.add(p('You have a room booked in the ', highlight('backstreets', '#fbbf24', 'Not the most prestigious part of the city, but its the best we could afford.')," area. Might be a good idea to check it out first."))
-    // add find-lodgings tutorial quest
-    g.addQuest('find-lodgings', {})
-    g.add("You could explore yourself and find your way to your room. Or the tour guide here at the station offers city tours that end in the backstreets—you could ask him.")
-    g.add(option('startExploring', {}, 'Explore'))
-  },
-  
-  startExploring: (g: Game) => {
-    g.add('The world is at your feet!')
-    // Player can now navigate and explore from the station
-  },
   
   tourCity: (g: Game) => {
     g.scene.npc = 'tour-guide'
+    g.scene.hideNpcImage = true // Hide NPC image because we're showing off location scenery
     g.add('You set off with Rob.')
     g.run('go', { location: 'default', minutes: 15 })
     g.add(speech('Here we are—the heart of Aetheria. Magnificent, isn\'t it?'))
@@ -200,8 +196,16 @@ export const startScripts = {
 
   tourBackstreets: (g: Game) => {
     g.run('go', { location: 'backstreets', minutes: 15 })
-    g.add(speech('Sadly I must leave you here.Your room\'s in one of the buildings, I believe. Enjoy Aetheria.',g.npc?.template.speechColor)) // use colour because scene ends?
-    g.add('The alleys close in, narrow and intimate. Gas lamps flicker like dying heartbeats. Somewhere above, gears moan. Somewhere below, something else answers. Your room waits on the third floor.')
+    g.add('The alleys close in, narrow and intimate. Gas lamps flicker like dying heartbeats. Somewhere above, gears moan. Somewhere below, something else answers.')
+    g.add(speech('Your room\'s in one of the buildings, I believe. It\'s a nice enough area, but be careful at night.')) 
+    g.add(option('tourEnds', {}, 'Finish the Tour'))
+  },
+
+  tourEnds: (g: Game) => {
+    g.scene.hideNpcImage = false
+    g.add('Rob shows you around the backstreets for a while.')
+    g.add(speech('I hope this helps you find your feet. Enjoy Aetheria!'))
+    g.add(option('endScene', {text: 'You thank Rob and he leaves you in the backstreets.'}, 'Say goodbye'))
   },
 }
 

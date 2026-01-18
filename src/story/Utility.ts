@@ -352,6 +352,12 @@ export const utilityScripts = {
     }
   },
 
+  endScene: (game: Game, params: { text?: string } = {}) => {
+    if (params.text) {
+      game.add(params.text)
+    }
+  },
+
   // Approach an NPC to talk to them
   approach: (game: Game, params: { npc?: string } = {}) => {
     const npcId = params.npc

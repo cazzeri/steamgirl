@@ -8,7 +8,7 @@ import { option, speech } from '../model/Format'
 registerNPC('landlord', {
   name: 'Landlord',
   image: '/images/npcs/Landlord.jpg',
-  speechColor: '#b8956e',
+  speechColor: '#b895ae',
 })
 
 // Location definitions for the player's lodgings
@@ -21,32 +21,27 @@ const LODGINGS_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     links: [{ dest: 'bathroom', time: 1 }], // 1 minute to bathroom
     activities: [
       {
+        name: 'Nap',
+        symbol: 'z',
+        script: (g: Game, _params: {}) => {
+          g.add('You lie down on your bed for a brief nap. The steady hum of the building\'s steam pipes lulls you into a light sleep.')
+          g.run('timeLapse', { minutes: 30 })
+          g.player.timers.set('lastNap', g.time)
+        },
+      },
+      {
         name: 'Sleep',
         symbol: 'zz',
+        condition: (g: Game) => g.hourOfDay >= 21,
         script: (g: Game, _params: {}) => {
-          // Check current time
           const currentDate = g.date
-          const currentHour = Math.floor(g.hourOfDay)
-          const isAfter9pm = currentHour >= 21
-          
-          if (isAfter9pm) {
-            // Sleep until 7am the next day
-            const nextDay = new Date(currentDate)
-            nextDay.setDate(nextDay.getDate() + 1)
-            nextDay.setHours(7, 0, 0, 0)
-            
-            const secondsUntil7am = Math.floor((nextDay.getTime() - currentDate.getTime()) / 1000)
-            g.add('You slip into bed and sleep soundly through the night. When you wake, the morning light filters through the window as steam pipes begin to hiss with the start of a new day.')
-            g.run('timeLapse', { seconds: secondsUntil7am })
-            // Set timer to finish time (after timeLapse)
-            g.player.timers.set('lastSleep', g.time)
-          } else {
-            // Take a 30 minute nap
-            g.add('You lie down on your bed for a brief nap. The steady hum of the building\'s steam pipes lulls you into a light sleep.')
-            g.run('timeLapse', { minutes: 30 })
-            // Set timer to finish time (after timeLapse)
-            g.player.timers.set('lastNap', g.time)
-          }
+          const nextDay = new Date(currentDate)
+          nextDay.setDate(nextDay.getDate() + 1)
+          nextDay.setHours(7, 0, 0, 0)
+          const secondsUntil7am = Math.floor((nextDay.getTime() - currentDate.getTime()) / 1000)
+          g.add('You slip into bed and sleep soundly through the night. When you wake, the morning light filters through the window as steam pipes begin to hiss with the start of a new day.')
+          g.run('timeLapse', { seconds: secondsUntil7am })
+          g.player.timers.set('lastSleep', g.time)
         },
       },
       {
@@ -128,11 +123,12 @@ export const lodgingsScripts = {
     g.run('timeLapse', { minutes: 3 })
     g.run('move', { location: 'bedroom' })
     g.scene.hideNpcImage = true
-    g.add('You follow your landlord to your room. He produces a brass key from his pocket and hands it to you.')
-    g.add(speech("Here's your key. Welcome home."))
+    g.add('You follow your landlord to your room. It\'s a small room, but nice enough and all you need right now. He produces a brass key from his pocket and hands it to you.')
+    g.add(speech("Here's your key. Enjoy your stay.",g.npc?.template.speechColor))
     g.run('gainItem', { item: 'room-key', number: 1 , text: 'You now have a key to your room.'})
+    g.addQuest('attend-university', {silent: true})
     
-    // Mark bedroom as visited to prevent this sequence from running again
+    // Mark bedroom as visited 
     bedroomLocation.numVisits++
   },
 }
