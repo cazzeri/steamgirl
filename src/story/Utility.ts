@@ -1,4 +1,5 @@
 import { Game } from '../model/Game'
+import { getItem } from '../model/Item'
 import { makeScripts } from '../model/Scripts'
 import { getLocation } from '../model/Location'
 import { type StatName, type MeterName, MAIN_STAT_INFO, SKILL_INFO, METER_INFO } from '../model/Stats'
@@ -356,6 +357,39 @@ export const utilityScripts = {
     if (params.text) {
       game.add(params.text)
     }
+  },
+
+  examineItem: (game: Game, params: { item?: string } = {}) => {
+    const itemId = params.item
+    if (!itemId || typeof itemId !== 'string') {
+      throw new Error('examineItem script requires an item parameter (string id)')
+    }
+    const def = getItem(itemId)
+    if (!def?.onExamine) {
+      game.add('Nothing happens.')
+      return
+    }
+    def.onExamine(game, {})
+  },
+
+  consumeItem: (game: Game, params: { item?: string } = {}) => {
+    const itemId = params.item
+    if (!itemId || typeof itemId !== 'string') {
+      throw new Error('consumeItem script requires an item parameter (string id)')
+    }
+    const def = getItem(itemId)
+    if (!def?.onConsume) {
+      game.add('You cannot use that.')
+      return
+    }
+    const has = game.player.inventory.some((i) => i.id === itemId && i.number >= 1)
+    if (!has) {
+      game.add("You don't have that item.")
+      return
+    }
+    game.player.removeItem(itemId, 1)
+    game.player.calcStats()
+    def.onConsume(game, {})
   },
 
   // Approach an NPC to talk to them
