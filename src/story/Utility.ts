@@ -395,6 +395,16 @@ export const utilityScripts = {
     act.script(game, {})
   },
 
+  /** Run the current location's onRelax if defined; otherwise a generic message. */
+  relaxAtLocation: (game: Game, _params: {} = {}) => {
+    const onRelax = game.location.template.onRelax
+    if (onRelax) {
+      onRelax(game, {})
+    } else {
+      game.add("There's nothing particularly relaxing to do here.")
+    }
+  },
+
   examineItem: (game: Game, params: { item?: string } = {}) => {
     const itemId = params.item
     if (!itemId || typeof itemId !== 'string') {

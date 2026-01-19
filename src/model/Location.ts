@@ -29,6 +29,7 @@ export interface LocationDefinition {
   activities?: LocationActivity[]
   onFirstArrive?: Script
   onArrive?: Script
+  onRelax?: Script
   secret?: boolean // If true, location starts as undiscovered (discovered = false)
 }
 

@@ -226,6 +226,22 @@ const LOCATION_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     image: '/images/lake.jpg',
     links: [{ dest: 'school', time: 8 }, { dest: 'market', time: 5 }], // 8 minutes back to school, 5 minutes to market
     secret: true, // Starts as undiscovered - must be found through exploration
+    onRelax: (g: Game) => {
+      g.run('addStat', { stat: 'Mood', change: 2, max: 80 })
+      g.run('wait', { minutes: 30 })
+    },
+    activities: [
+      {
+        name: 'Relax',
+        condition: (g: Game) => {
+          const h = g.hourOfDay
+          return h >= 7 && h < 19 // 7am to 7pm
+        },
+        script: (g: Game) => {
+          g.run('relaxAtLocation', {})
+        },
+      },
+    ],
   },
   market: {
     name: 'Market',
