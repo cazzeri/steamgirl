@@ -156,7 +156,7 @@ export class Game {
     }
     
     // Create the NPC instance
-    const npc = new NPC(npcId)
+    const npc = new NPC(npcId, this)
     
     // Call generate function if it exists (to initialize any fields)
     if (definition.generate) {

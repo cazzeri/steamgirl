@@ -28,12 +28,15 @@ export interface NPCDefinition {
 
 /** Represents a game NPC instance with mutable state. Definitional data is accessed via the template property. */
 export class NPC {
+  /** Back-reference to the Game instance. Set in constructor, never changes. */
+  readonly game: Game
   id: NPCId
   approachCount: number
   location: string | null
   nameKnown: boolean // Whether the player knows the NPC's name
 
-  constructor(id: NPCId) {
+  constructor(id: NPCId, game: Game) {
+    this.game = game
     this.id = id
     this.approachCount = 0
     this.location = null
@@ -90,7 +93,7 @@ export class NPC {
     }
   }
 
-  static fromJSON(json: string | NPCData, _game: Game): NPC {
+  static fromJSON(json: string | NPCData, game: Game): NPC {
     const data = typeof json === 'string' ? JSON.parse(json) : json
     const npcId = data.id
     
@@ -105,7 +108,7 @@ export class NPC {
     }
     
     // Create the NPC instance
-    const npc = new NPC(npcId)
+    const npc = new NPC(npcId, game)
     
     // Do NOT call generate() during deserialization - we're restoring from saved state
     // generate() should only be called when creating NPCs on demand via getNPC()

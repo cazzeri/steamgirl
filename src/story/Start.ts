@@ -69,25 +69,27 @@ registerNPC('commuter', {
 
 export const startScripts = {
   init: (g: Game) => {
+    const pc=g.player
+
     // Set player name
-    g.player.name = 'Elise'
+    pc.name = 'Elise'
     
     // Set base stats to 30
-    g.player.basestats.set('Agility', 30)
-    g.player.basestats.set('Perception', 30)
-    g.player.basestats.set('Wits', 30)
-    g.player.basestats.set('Charm', 30)
-    g.player.basestats.set('Willpower', 30)
-    g.player.basestats.set('Strength', 30)
+    pc.basestats.set('Agility', 30)
+    pc.basestats.set('Perception', 30)
+    pc.basestats.set('Wits', 30)
+    pc.basestats.set('Charm', 30)
+    pc.basestats.set('Willpower', 30)
+    pc.basestats.set('Strength', 30)
     
     // Set initial meter values (meters are now part of basestats)
-    g.player.basestats.set('Energy', 80)
-    g.player.basestats.set('Mood', 70)
-    g.player.basestats.set('Composure', 50)
+    pc.basestats.set('Energy', 80)
+    pc.basestats.set('Mood', 70)
+    pc.basestats.set('Composure', 50)
     // Arousal, Stress, Pain remain at 0 (initialized in constructor)
     
     // Set initial skill values
-    g.player.basestats.set('Mechanics', 20)
+    pc.basestats.set('Mechanics', 20)
 
     // Recalculate stats after setting base stats
     g.run('calcStats', {})
@@ -134,8 +136,7 @@ export const startScripts = {
     g.add(p('You have a room booked in the ', highlight('backstreets', '#fbbf24', 'Not the most prestigious part of the city, but its the best we could afford.')," area. Might be a good idea to check it out first."))
     // add find-lodgings tutorial quest
     g.addQuest('find-lodgings', {})
-    g.add("You could explore yourself and find your way to your room. Or the tour guide here at the station offers city tours that end in the backstreets—you could ask him.")
-    g.add(option('endScene', {text: 'The world is at your feet!.'}, 'Explore'))
+    g.add("You could explore yourself and find your way to your room. Or the tour guide offers city tours that end in the backstreets - you could ask him?")
   },
 
 
