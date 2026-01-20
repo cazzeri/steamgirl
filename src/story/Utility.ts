@@ -438,6 +438,24 @@ export const utilityScripts = {
     def.onConsume(game, {})
   },
 
+  /** Run a named script on an NPC. Params: script (name), npc? (id; default: game.scene.npc), params? (passed to the NPC script). */
+  interact: (game: Game, params: { npc?: string; script?: string; params?: object } = {}) => {
+    const npcId = params.npc ?? game.scene.npc
+    const scriptName = params.script
+    if (!npcId || typeof npcId !== 'string') {
+      throw new Error('interact script requires an npc parameter (or an active NPC scene) and a script parameter')
+    }
+    if (!scriptName || typeof scriptName !== 'string') {
+      throw new Error('interact script requires a script parameter (string name)')
+    }
+    const npc = game.getNPC(npcId)
+    const fn = npc.template.scripts?.[scriptName]
+    if (!fn) {
+      throw new Error(`NPC ${npcId} has no script "${scriptName}"`)
+    }
+    fn(game, params.params ?? {})
+  },
+
   // Approach an NPC to talk to them
   approach: (game: Game, params: { npc?: string } = {}) => {
     const npcId = params.npc

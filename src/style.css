@@ -564,6 +564,48 @@ img {
   margin-left: auto;
 }
 
+/* Nav groups: one box per group (Travel / Places) with subtitle */
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-sm);
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-strong), var(--shadow-inner);
+  backdrop-filter: blur(10px);
+}
+
+.nav-group-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.nav-group-links {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+/* Thumbnails inside a nav-group: no per-link box, minimal styling */
+.nav-group .thumbnail {
+  background: transparent;
+  border: 1px solid transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.nav-group .thumbnail:hover:not(:disabled) {
+  background: var(--bg-panel-soft);
+  border-color: var(--border-subtle);
+  box-shadow: none;
+}
+
 /* General-purpose thumbnail component */
 
 .thumbnail {

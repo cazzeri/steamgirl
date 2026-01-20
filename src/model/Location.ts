@@ -31,11 +31,15 @@ export interface LocationDefinition {
   onArrive?: Script
   onRelax?: Script
   secret?: boolean // If true, location starts as undiscovered (discovered = false)
+  /** If true, this is a main area for travel (e.g. City Centre, Station). Links between two mainLocation sites appear under Travel. */
+  mainLocation?: boolean
 }
 
 export interface LocationLink {
   dest: LocationId
   time: number
+  /** If set, overrides the destination location name in the nav (e.g. "Leave for Backstreets"). */
+  label?: string
   onFollow?: Script
   checkAccess?: (game: Game) => string | null | undefined // Returns reason string if access denied, null/undefined if allowed
 }

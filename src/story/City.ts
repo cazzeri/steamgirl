@@ -13,6 +13,7 @@ const LOCATION_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     name: 'Ironspark Terminus',
     description: 'The bustling main railway station, filled with travelers.',
     image: '/images/station.jpg',
+    mainLocation: true,
     links: [{ dest: 'default', time: 10 }], // 10 minutes to city, 10 minutes to backstreets
     activities: [
       {
@@ -77,17 +78,25 @@ const LOCATION_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     name: 'City Centre',
     description: 'The heart of the city, where commerce and culture meet.',
     image: '/images/city.jpg',
+    mainLocation: true,
     links: [{ dest: 'station', time: 10 }, { dest: 'backstreets', time: 5 }, { dest: 'school', time: 5 }, { dest: 'market', time: 3 }], // 10 minutes back to station, 5 minutes to backstreets, 5 minutes to school, 3 minutes to market
   },
   backstreets: {
     name: 'Backstreets',
     description: 'The winding alleys and hidden passages of the city, where secrets lurk in the shadows.',
     image: '/images/backstreet.jpg',
-    links: [{ dest: 'default', time: 5 }, { dest: 'market', time: 5 }, { dest: 'lowtown', time: 5 }], // 5 minutes to city centre, 5 minutes to market, 5 minutes to lowtown
+    mainLocation: true,
+    links: [
+      { dest: 'default', time: 5 },
+      { dest: 'market', time: 5 },
+      { dest: 'lowtown', time: 5 },
+      { dest: 'bedroom', time: 2 },
+    ], // 5 to city, 5 to market, 5 to lowtown; 2 to lodgings (shown in Places once discovered)
     activities: [
       {
-        name: 'Go to Lodgings',
+        name: 'Find Lodgings',
         symbol: 'H',
+        condition: (g: Game) => !g.getLocation('bedroom').discovered,
         script: (g: Game, _params: {}) => {
           g.run('enterLodgings')
         },
@@ -138,6 +147,7 @@ const LOCATION_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     name: 'University',
     description: 'A grand educational institution where knowledge flows like steam through pipes.',
     image: '/images/school.jpg',
+    mainLocation: true,
     links: [
       { dest: 'default', time: 5 }, 
       { dest: 'lake', time: 8 }, 
@@ -224,6 +234,7 @@ const LOCATION_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     name: 'The Lake',
     description: 'A serene city lake, where steam gently rises from the surface.',
     image: '/images/lake.jpg',
+    mainLocation: true,
     links: [{ dest: 'school', time: 8 }, { dest: 'market', time: 5 }], // 8 minutes back to school, 5 minutes to market
     secret: true, // Starts as undiscovered - must be found through exploration
     onRelax: (g: Game) => {
@@ -247,6 +258,7 @@ const LOCATION_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     name: 'Market',
     image: '/images/market.jpg',
     description: 'A bustling marketplace filled with exotic goods and mechanical wonders.',
+    mainLocation: true,
     links: [{ dest: 'lake', time: 5 }, { dest: 'backstreets', time: 5 }, { dest: 'default', time: 3 }], // 5 minutes to lake, 5 minutes to backstreets, 3 minutes to city centre
     activities: [
       {

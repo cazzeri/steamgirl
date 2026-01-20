@@ -18,7 +18,11 @@ const LODGINGS_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     description: 'Your small but comfortable room in the backstreets.',
     image: '/images/room.jpg',
     nightImage: '/images/room-night.jpg',
-    links: [{ dest: 'bathroom', time: 1 }], // 1 minute to bathroom
+    secret: true, // Undiscovered until after initial "Go to Lodgings" / landlord intro; then appears as a Place in nav
+    links: [
+      { dest: 'bathroom', time: 1 },
+      { dest: 'backstreets', time: 2, label: 'Leave for Backstreets' },
+    ],
     activities: [
       {
         name: 'Nap',
@@ -42,14 +46,6 @@ const LODGINGS_DEFINITIONS: Record<LocationId, LocationDefinition> = {
           g.add('You slip into bed and sleep soundly through the night. When you wake, the morning light filters through the window as steam pipes begin to hiss with the start of a new day.')
           g.run('timeLapse', { seconds: secondsUntil7am })
           g.player.timers.set('lastSleep', g.time)
-        },
-      },
-      {
-        name: 'Leave',
-        symbol: 'X',
-        script: (g: Game, _params: {}) => {
-          g.run('timeLapse', { minutes: 2 })
-          g.run('move', { location: 'backstreets' })
         },
       },
     ],
@@ -127,9 +123,10 @@ export const lodgingsScripts = {
     g.add(speech("Here's your key. Enjoy your stay.",g.npc?.template.speechColor))
     g.run('gainItem', { item: 'room-key', number: 1 , text: 'You now have a key to your room.'})
     g.addQuest('attend-university', {silent: true})
-    
-    // Mark bedroom as visited 
+
+    // Mark bedroom as visited and discovered so it appears as a Place in nav from backstreets
     bedroomLocation.numVisits++
+    bedroomLocation.discovered = true
   },
 }
 

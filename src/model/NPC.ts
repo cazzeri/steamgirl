@@ -24,6 +24,8 @@ export interface NPCDefinition {
   onApproach?: Script
   // Script to run when the hour changes (for NPC movement)
   onMove?: Script
+  /** NPC-specific scripts run via the global "interact" script with { npc, script, params? }. */
+  scripts?: Record<string, Script>
 }
 
 /** Represents a game NPC instance with mutable state. Definitional data is accessed via the template property. */
