@@ -458,6 +458,7 @@ export const utilityScripts = {
     if (!fn) {
       throw new Error(`NPC ${npcId} has no script "${scriptName}"`)
     }
+    game.timeLapse(1)
     fn(game, params.params ?? {})
   },
 

@@ -61,13 +61,11 @@ registerNPC('spice-dealer', {
       const crown = g.player.inventory.find((i) => i.id === 'crown')?.number ?? 0
       if (crown < price) {
         g.add(speech(`You need ${price} Krona. Come back when you've got it.`, g.npc?.template.speechColor))
-        g.run('interact', { script: 'onGeneralChat' })
         return
       }
       g.player.removeItem('crown', price)
       g.run('gainItem', { item: 'spice', number: 1, text: 'You receive a small packet of Spice.' })
       g.add(speech('Pleasure doin\' business. Don\'t say where you got it.', g.npc?.template.speechColor))
-      g.run('interact', { script: 'onGeneralChat' })
     },
     flirt: (g: Game) => {
       const npc = g.npc!
@@ -79,7 +77,6 @@ registerNPC('spice-dealer', {
       } else {
         g.add(speech('Save it. I\'m not buyin\'.', g.npc?.template.speechColor))
       }
-      g.run('interact', { script: 'onGeneralChat' })
     },
   },
   onMove: (game: Game) => {
