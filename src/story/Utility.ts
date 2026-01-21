@@ -212,6 +212,11 @@ export const utilityScripts = {
     // Run onFollow script when navigating down a link (if set)
     if (link.onFollow) {
       link.onFollow(game, {})
+      // If onFollow created a scene with options, don't proceed with automatic navigation
+      // (the scene options will handle navigation instead)
+      if (game.inScene) {
+        return
+      }
     }
     
     // Get the location from the game (ensuring it exists)

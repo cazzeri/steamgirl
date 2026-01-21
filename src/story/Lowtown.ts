@@ -4,6 +4,7 @@ import type { LocationId, LocationDefinition } from '../model/Location'
 import { registerLocation } from '../model/Location'
 import { speech } from '../model/Format'
 import { consumeAlcohol } from './Effects'
+import { makeScripts } from '../model/Scripts'
 
 // Location definitions for Lowtown
 const LOWTOWN_DEFINITIONS: Record<LocationId, LocationDefinition> = {
@@ -31,12 +32,55 @@ const LOWTOWN_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     name: 'Copper Pot Tavern',
     description: 'A dimly lit establishment where workers and strangers alike seek refuge from the grime of Lowtown.',
     image: '/images/tavern.jpg',
-    links: [{ dest: 'lowtown', time: 2 }], // 2 minutes back to Lowtown
+    links: [
+      { dest: 'lowtown', time: 2, travel: true, label: 'Exit to Street' }, // 2 minutes back to Lowtown
+      { dest: 'tavern-ladies-bathroom', time: 1, label: 'Ladies Bathroom' },
+      { 
+        dest: 'tavern-gents-bathroom', 
+        time: 1, 
+        label: 'Gents Bathroom',
+        onFollow: (g: Game, _p: {}) => {
+          g.add("You shouldn't be going in there... are you sure?")
+          g.addOption('enterGentsBathroom', {}, 'Enter Gents')
+          g.addOption('endScene', { text: 'You turn away.' }, 'Turn Away')
+        },
+      },
+      { dest: 'tavern-cellars', time: 1, label: 'Cellars' },
+    ],
     onArrive: (g: Game) => {
       g.getNPC('ivan-hess')
       g.getNPC('elvis-crowe')
       g.getNPC('jonny-elric')
     },
+  },
+  'tavern-ladies-bathroom': {
+    name: 'Ladies Bathroom',
+    description: 'A small, private restroom.',
+    image: '/images/lowtown/ladies.jpg',
+    links: [{ dest: 'copper-pot-tavern', time: 1 }],
+  },
+  'tavern-gents-bathroom': {
+    name: 'Gents Bathroom',
+    description: 'The men\'s restroom.',
+    image: '/images/lowtown/gents.jpg',
+    links: [{ dest: 'copper-pot-tavern', time: 1 }],
+  },
+  'tavern-cellars': {
+    name: 'Cellars',
+    description: 'The tavern\'s storage cellars, stacked with barrels and crates.',
+    image: '/images/lowtown/cellars.jpg',
+    secret: true, // Starts as undiscovered
+    links: [
+      { dest: 'copper-pot-tavern', time: 1 },
+      { dest: 'tavern-cupboard', time: 1, label: 'Cupboard' },
+    ],
+  },
+  'tavern-cupboard': {
+    name: 'Cupboard',
+    description: 'A small storage cupboard.',
+    image: '/images/lowtown/cupboard.jpg',
+    secret: true, // Starts as undiscovered
+    links: [{ dest: 'tavern-cellars', time: 1 }],
   },
 }
 
@@ -225,6 +269,25 @@ registerNPC('ivan-hess', {
     },
   },
 })
+
+// Tavern scripts
+const tavernScripts = {
+  enterGentsBathroom: (g: Game, _params: {}) => {
+    // Clear the scene first
+    g.clearScene()
+    // Move directly using move (bypasses onFollow) and handle time/discovery manually
+    g.timeLapse(1)
+    const gentsLocation = g.getLocation('tavern-gents-bathroom')
+    g.run('move', { location: 'tavern-gents-bathroom' })
+    gentsLocation.discovered = true
+    // Run onArrive if it exists
+    const def = gentsLocation.template
+    if (def.onArrive) {
+      def.onArrive(g, {})
+    }
+  },
+}
+makeScripts(tavernScripts)
 
 // Register all location definitions when module loads
 Object.entries(LOWTOWN_DEFINITIONS).forEach(([id, definition]) => {
