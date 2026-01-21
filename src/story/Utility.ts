@@ -1,7 +1,7 @@
 import { Game } from '../model/Game'
 import { getItem } from '../model/Item'
 import { makeScripts } from '../model/Scripts'
-import { getLocation } from '../model/Location'
+import { getLocation, getAllLocationIds } from '../model/Location'
 import { type StatName, type MeterName, MAIN_STAT_INFO, SKILL_INFO, METER_INFO } from '../model/Stats'
 import { capitalise } from '../model/Text'
 import { colour, speech } from '../model/Format'
@@ -493,6 +493,14 @@ export const utilityScripts = {
 
 // Register all utility scripts when module loads
 makeScripts(utilityScripts)
+
+/** Sets all registered locations to discovered. For fast debug access (e.g. Skip Intro). */
+export function discoverAllLocations(game: Game): void {
+  for (const id of getAllLocationIds()) {
+    const loc = game.getLocation(id)
+    loc.discovered = true
+  }
+}
 
 // Helper function for location discovery checks (can be called directly, not as a script)
 export function maybeDiscoverLocation(

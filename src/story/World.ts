@@ -20,6 +20,7 @@ import './Start'
 import './TestNPC'
 
 // Register location definitions and related content
+import './Subway' // Subway stations (before City/Lowtown so links to them exist)
 import './City' // Register city locations
 import './Lodgings' // Register lodgings locations and scripts
 import './Lowtown' // Register lowtown location and NPCs

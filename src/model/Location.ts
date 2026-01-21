@@ -42,6 +42,8 @@ export interface LocationLink {
   label?: string
   onFollow?: Script
   checkAccess?: (game: Game) => string | null | undefined // Returns reason string if access denied, null/undefined if allowed
+  /** If true, show this link under Travel instead of Places (e.g. subway-to-subway). */
+  travel?: boolean
 }
 
 export interface LocationActivity {
@@ -112,6 +114,11 @@ export class Location {
 // Get a location definition by id
 export function getLocation(id: LocationId): LocationDefinition | undefined {
   return LOCATION_DEFINITIONS[id]
+}
+
+// Get all registered location IDs (for iteration, e.g. discover-all in debug)
+export function getAllLocationIds(): LocationId[] {
+  return Object.keys(LOCATION_DEFINITIONS)
 }
 
 

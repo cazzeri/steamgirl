@@ -4,6 +4,7 @@ import { option, p, highlight, speech } from '../model/Format'
 import type { CardDefinition } from '../model/Card'
 import { registerCardDefinition } from '../model/Card'
 import { NPC, registerNPC } from '../model/NPC'
+import { discoverAllLocations } from '../story/Utility'
 import '../story/Effects' // Register effect definitions
 import '../story/Lodgings' // Register lodgings scripts
 
@@ -119,7 +120,21 @@ export const startScripts = {
     g.add('The train exhales a long, wet hiss as it comes to a halt at the platform.')
       .add(p('You have travelled across the whole continent, and are finally here, in the city of ', highlight('Aetheria', '#fbbf24', 'Aetheria: The great steam-powered city of brass and gears, where mechanical marvels and Victorian elegance meet in a symphony of innovation and tradition.'), '.'))
       .add(option('startPlatform', {}, 'Step onto Platform'))
-      .add(option('finishIntroduction', {}, 'Skip Intro'))
+      .add(option('skipIntro', {}, 'Skip Intro'))
+  },
+
+  /** Skip intro: discover all locations for debug access, then jump to bedroom with key and goals. */
+  skipIntro: (g: Game) => {
+    discoverAllLocations(g)
+    g.run('timeLapse', { minutes: 3 })
+    g.run('move', { location: 'bedroom' })
+    g.scene.hideNpcImage = true
+    g.add('You skip ahead to your room in the backstreets. Your key is in your hand; your goals, ahead.')
+    g.run('gainItem', { item: 'room-key', number: 1, text: 'You have your room key.' })
+    g.addQuest('attend-university', { silent: true })
+    const bedroom = g.getLocation('bedroom')
+    bedroom.numVisits++
+    bedroom.discovered = true
   },
 
   startPlatform: (g: Game) => {

@@ -14,7 +14,10 @@ const LOCATION_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     description: 'The bustling main railway station, filled with travelers.',
     image: '/images/station.jpg',
     mainLocation: true,
-    links: [{ dest: 'default', time: 10 }], // 10 minutes to city, 10 minutes to backstreets
+    links: [
+      { dest: 'default', time: 10 }, // 10 minutes to city
+      { dest: 'subway-terminus', time: 2, label: 'Subway' },
+    ],
     activities: [
       {
         name: 'Explore',
@@ -142,6 +145,9 @@ const LOCATION_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     onFirstArrive: (g: Game) => {
       g.add('You arrive in the backstreets. The air is thick with the smell of coal and oil. You can hear the sound of steam engines in the distance.')
     },
+    onArrive: (g: Game) => {
+      g.getNPC('jonny-elric')
+    },
   },
   school: {
     name: 'University',
@@ -151,6 +157,7 @@ const LOCATION_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     links: [
       { dest: 'default', time: 5 }, 
       { dest: 'lake', time: 8 }, 
+      { dest: 'subway-university', time: 2, label: 'Subway' },
       { 
         dest: 'hallway', 
         time: 2,

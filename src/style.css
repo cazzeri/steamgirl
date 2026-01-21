@@ -537,25 +537,12 @@ img {
   width: 100%;
 }
 
-.activities,
-.npcs,
 .nav-links {
   display: flex;
   flex-direction: row;
   gap: var(--space-sm);
   flex-wrap: wrap;
   max-width: 600px;
-}
-
-.activities {
-  justify-content: flex-start;
-}
-
-.npcs {
-  justify-content: center;
-}
-
-.nav-links {
   justify-content: flex-end;
 }
 
@@ -564,8 +551,8 @@ img {
   margin-left: auto;
 }
 
-/* Nav groups: one box per group (Travel / Places) with subtitle */
-.nav-group {
+/* Shared overlay box: nav groups (Places/Travel), Characters, Activities */
+.overlay-group {
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
@@ -575,9 +562,10 @@ img {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-strong), var(--shadow-inner);
   backdrop-filter: blur(10px);
+  max-width: 600px;
 }
 
-.nav-group-title {
+.overlay-group-title {
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-muted);
@@ -585,22 +573,27 @@ img {
   letter-spacing: 0.05em;
 }
 
-.nav-group-links {
+.overlay-group-content {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   gap: var(--space-xs);
 }
 
-/* Thumbnails inside a nav-group: no per-link box, minimal styling */
+.overlay-group-content--center {
+  justify-content: center;
+}
+
+/* Thumbnails inside .nav-group: no per-link box, minimal styling */
 .nav-group .thumbnail {
   background: transparent;
-  border: 1px solid transparent;
+
   box-shadow: none;
   backdrop-filter: none;
 }
 
 .nav-group .thumbnail:hover:not(:disabled) {
+  border: 1px solid transparent;
   background: var(--bg-panel-soft);
   border-color: var(--border-subtle);
   box-shadow: none;
@@ -615,7 +608,7 @@ img {
   gap: var(--space-xs);
   padding: var(--space-xs);
   background: var(--bg-overlay);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid transparent;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-strong), var(--shadow-inner);
   backdrop-filter: blur(10px);
@@ -642,7 +635,7 @@ img {
 .thumbnail:disabled:hover {
   transform: none;
   background: var(--bg-overlay);
-  border-color: var(--border-subtle);
+  border-color: transparent;
 }
 
 .thumbnail-image {

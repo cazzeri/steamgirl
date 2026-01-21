@@ -31,7 +31,9 @@ export function NavOverlay() {
   for (const link of discovered) {
     const destDef = getLocation(link.dest)
     const destMain = destDef?.mainLocation === true
-    if (currentMain && destMain) {
+    if (link.travel === true) {
+      travelLinks.push(link)
+    } else if (currentMain && destMain) {
       travelLinks.push(link)
     } else {
       placeLinks.push(link)
@@ -45,9 +47,9 @@ export function NavOverlay() {
   const renderGroup = (title: string, groupLinks: LocationLink[]) => {
     if (groupLinks.length === 0) return null
     return (
-      <div className="nav-group" key={title}>
-        <div className="nav-group-title">{title}</div>
-        <div className="nav-group-links">
+      <div className="overlay-group nav-group" key={title}>
+        <div className="overlay-group-title">{title}</div>
+        <div className="overlay-group-content">
           {groupLinks.map((link, index) => {
             const targetLocation = getLocation(link.dest)
             if (!targetLocation) return null

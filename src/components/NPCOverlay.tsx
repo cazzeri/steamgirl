@@ -14,7 +14,9 @@ export function NPCOverlay() {
   }
 
   return (
-    <div className="activities npcs">
+    <div className="overlay-group">
+      <div className="overlay-group-title">Characters</div>
+      <div className="overlay-group-content overlay-group-content--center">
       {npcsPresent.map((npcId) => {
         const npc = game.getNPC(npcId)
         const npcDef = npc.template
@@ -35,6 +37,7 @@ export function NPCOverlay() {
           />
         )
       })}
+      </div>
     </div>
   )
 }

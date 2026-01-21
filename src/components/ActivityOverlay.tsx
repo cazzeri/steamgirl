@@ -30,7 +30,9 @@ export function ActivityOverlay() {
   }
 
   return (
-    <div className="activities">
+    <div className="overlay-group">
+      <div className="overlay-group-title">Activities</div>
+      <div className="overlay-group-content">
       {visibleActivities.map((activity, index) => (
         <Thumbnail
           key={index}
@@ -41,6 +43,7 @@ export function ActivityOverlay() {
           title={activity.name}
         />
       ))}
+      </div>
     </div>
   )
 }
