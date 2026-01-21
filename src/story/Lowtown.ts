@@ -87,7 +87,8 @@ registerNPC('spice-dealer', {
     // Update location based on schedule when hour changes
     const schedule: [number, number, string][] = [
       [15, 2, 'lowtown'], // 3pm-2am in lowtown (wrap-around)
-      [2, 3, 'backstreets']
+      [2, 3, 'backstreets'],
+      [4, 7, 'docks']
     ]
     npc.followSchedule(game, schedule)
   },
@@ -101,7 +102,7 @@ registerNPC('jonny-elric', {
   onMove: (game: Game) => {
     const npc = game.getNPC('jonny-elric')
     const schedule: [number, number, string][] = [
-      [6, 10, 'lowtown'],           
+      [6, 10, 'docks'],           
       [10, 11, 'backstreets'],      
       [11, 13, 'market'],          
       [13, 14, 'backstreets'],      

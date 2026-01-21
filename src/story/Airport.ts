@@ -6,6 +6,7 @@ const AIRPORT_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     name: 'Airport',
     description: 'The airfield and dirigible station. Gantry cranes and mooring masts loom over the tarmac.',
     image: '/images/airport/airport.jpg',
+    nightImage: '/images/airport/airport-night.jpg',
     mainLocation: true,
     links: [{ dest: 'subway-airport', time: 2, label: 'Underground' }],
   },

@@ -6,6 +6,8 @@ const DOCKS_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     name: 'Docks',
     description: 'The harbour front. Cargo steamers, cranes, and warehouses line the wharf.',
     image: '/images/docks/docks.jpg',
+    nightImage: '/images/docks/docks-night.jpg',
+
     mainLocation: true,
     links: [{ dest: 'subway-docks', time: 2, label: 'Underground' }],
   },

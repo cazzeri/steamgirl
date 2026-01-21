@@ -75,6 +75,7 @@ const SUBWAY_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     name: 'University Underground',
     description: 'Steam and brass; the underground platform under the university grounds.',
     image: '/images/subway.jpg',
+    nightImage: '/images/subway-night.jpg',
     links: [
       ...subwayLinksFrom('subway-university'),
       { dest: 'school', time: 2, label: 'Exit to University' },
@@ -84,6 +85,7 @@ const SUBWAY_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     name: 'Lowtown Underground',
     description: 'A dim platform in the industrial depths. Trains clank and hiss.',
     image: '/images/subway.jpg',
+    nightImage: '/images/subway-night.jpg',
     links: [
       ...subwayLinksFrom('subway-lowtown'),
       { dest: 'lowtown', time: 2, label: 'Exit to Lowtown' },
@@ -112,6 +114,7 @@ const SUBWAY_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     name: 'Airport Underground',
     description: 'The platform beneath the airfield. Dirigibles and steam-ships cast long shadows through the vents.',
     image: '/images/subway.jpg',
+    nightImage: '/images/subway-night.jpg',
     links: [
       ...subwayLinksFrom('subway-airport'),
       { dest: 'airport', time: 2, label: 'Exit to Airport' },
@@ -121,6 +124,7 @@ const SUBWAY_DEFINITIONS: Record<LocationId, LocationDefinition> = {
     name: 'Docks Underground',
     description: 'A dank platform by the waterfront. The tang of salt and coal steam hangs in the air.',
     image: '/images/subway.jpg',
+    nightImage: '/images/subway-night.jpg',
     links: [
       ...subwayLinksFrom('subway-docks'),
       { dest: 'docks', time: 2, label: 'Exit to Docks' },
