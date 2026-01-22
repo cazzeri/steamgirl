@@ -100,37 +100,42 @@ registerNPC('ivan-hess', {
     npc.followSchedule(game, [[10, 2, 'copper-pot-tavern']])
   },
   onApproach: (game: Game) => {
+    const npc = game.npc
     game.add('Ivan Hess wipes down the bar with a rag, then looks up. His expression is guarded but not unfriendly.')
-    game.add(speech("What'll it be?", game.npc?.template.speechColor))
-    game.run('interact', { script: 'onGeneralChat' })
+    npc.say("What'll it be?")
+    npc.chat()
   },
   scripts: {
     onGeneralChat: (g: Game) => {
-      g.addOption('interact', { script: 'buyDrink' }, 'Buy a drink (10 krona)')
-      g.addOption('interact', { script: 'gossip' }, 'Ask for gossip')
-      g.addOption('interact', { script: 'work' }, 'Ask for work')
-      g.addOption('endConversation', { text: "You take your leave .", reply: "Come back whenever you're thirsty." }, 'Leave')
+      const npc = g.npc
+      npc.option('Buy a drink (10 krona)', 'buyDrink')
+        .option('Ask for gossip', 'gossip')
+        .option('Ask for work', 'work')
+        .leaveOption("You take your leave .", "Come back whenever you're thirsty.")
     },
     buyDrink: (g: Game) => {
+      const npc = g.npc
       const crown = g.player.inventory.find((i) => i.id === 'crown')?.number ?? 0
       if (crown < 10) {
-        g.add(speech("You're short of krona, friend. Ten for a pint.", g.npc?.template.speechColor))
-        g.run('interact', { script: 'onGeneralChat' })
+        npc.say("You're short of krona, friend. Ten for a pint.")
+        npc.chat()
         return
       }
       g.player.removeItem('crown', 10)
       consumeAlcohol(g, 35)
       g.add('You hand over ten krona. Ivan draws you a foaming pint and slides it across the bar. You take a long drink.')
-      g.add(speech("There you go. Mind the fumes from the still—we like our ale strong here.", g.npc?.template.speechColor))
-      g.run('interact', { script: 'onGeneralChat' })
+      npc.say("There you go. Mind the fumes from the still—we like our ale strong here.")
+      npc.chat()
     },
     gossip: (g: Game) => {
-      g.add(speech("Word is the constables have been poking around the old mill. And the Spice Dealer's been in twice this week, which always means someone's looking for something. Beyond that, I keep my ears open and my mouth shut.", g.npc?.template.speechColor))
-      g.run('interact', { script: 'onGeneralChat' })
+      const npc = g.npc
+      npc.say("Word is the constables have been poking around the old mill. And the Spice Dealer's been in twice this week, which always means someone's looking for something. Beyond that, I keep my ears open and my mouth shut.")
+      npc.chat()
     },
     work: (g: Game) => {
-      g.add(speech("I could use someone to wash glasses and help when it gets busy. Pays a few krona, and you'll hear things. Come back when you've got a free evening and we'll talk.", g.npc?.template.speechColor))
-      g.run('interact', { script: 'onGeneralChat' })
+      const npc = g.npc
+      npc.say("I could use someone to wash glasses and help when it gets busy. Pays a few krona, and you'll hear things. Come back when you've got a free evening and we'll talk.")
+      npc.chat()
     },
   },
 })

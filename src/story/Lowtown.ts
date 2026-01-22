@@ -134,42 +134,45 @@ registerNPC('jonny-elric', {
     npc.followSchedule(game, schedule)
   },
   onApproach: (game: Game) => {
-    const npc = game.npc!
+    const npc = game.npc
     if (npc.nameKnown > 0) {
       game.add('Jonny Elric adjusts his monocle and fixes you with a flat, assessing stare. Friend of Elvis; enforcer by trade.')
-      game.add(speech("Something I can help you with?", game.npc?.template.speechColor))
-      game.run('interact', { script: 'onGeneralChat' })
+      npc.say("Something I can help you with?")
+      npc.chat()
     } else {
       game.add('A monocled figure adjusts his monocle and fixes you with a flat, assessing stare. Friend of Elvis; enforcer by trade.')
-      game.add(speech("Something I can help you with?", game.npc?.template.speechColor))
+      npc.say("Something I can help you with?")
       game.add('He doesn\'t seem interested in talking until you\'ve proven yourself.')
-      game.addOption('endConversation', { text: "You back away slowly.", reply: "Mind how you go." }, 'Leave')
+      npc.leaveOption("You back away slowly.", "Mind how you go.")
     }
   },
   scripts: {
     onGeneralChat: (g: Game) => {
-      const npc = g.npc!
+      const npc = g.npc
       // Only show general chat if name is known
       if (npc.nameKnown <= 0) {
         g.add('He doesn\'t seem interested in talking until you\'ve proven yourself.')
         return
       }
-      g.addOption('interact', { script: 'askElvis' }, 'You know Elvis?')
-      g.addOption('interact', { script: 'askTerritory' }, "Who runs these streets?")
-      g.addOption('interact', { script: 'work' }, 'I need work.')
-      g.addOption('endConversation', { text: "You back away slowly.", reply: "Mind how you go." }, 'Leave')
+      npc.option('You know Elvis?', 'askElvis')
+        .option("Who runs these streets?", 'askTerritory')
+        .option('I need work.', 'work')
+        .leaveOption("You back away slowly.", "Mind how you go.")
     },
     askElvis: (g: Game) => {
-      g.add(speech("Elvis and me go way back. I handle the rough stuff. He does the thinking. You want to talk to the boss, you find him—I'm not a messenger."))
-      g.run('interact', { script: 'onGeneralChat' })
+      const npc = g.npc
+      npc.say("Elvis and me go way back. I handle the rough stuff. He does the thinking. You want to talk to the boss, you find him—I'm not a messenger.")
+      npc.chat()
     },
     askTerritory: (g: Game) => {
-      g.add(speech("Same as always. Elvis's word is law down here. I make sure people remember it."))
-      g.run('interact', { script: 'onGeneralChat' })
+      const npc = g.npc
+      npc.say("Same as always. Elvis's word is law down here. I make sure people remember it.")
+      npc.chat()
     },
     work: (g: Game) => {
-      g.add(speech("Maybe. You look like you could hold your own. But I don't hire strangers. Earn Elvis's nod first—then we'll talk."))
-      g.run('interact', { script: 'onGeneralChat' })
+      const npc = g.npc
+      npc.say("Maybe. You look like you could hold your own. But I don't hire strangers. Earn Elvis's nod first—then we'll talk.")
+      npc.chat()
     },
   },
 })
@@ -191,42 +194,45 @@ registerNPC('elvis-crowe', {
     npc.followSchedule(game, schedule)
   },
   onApproach: (game: Game) => {
-    const npc = game.npc!
+    const npc = game.npc
     if (npc.nameKnown > 0) {
       game.add('Elvis Crowe sizes you up with a cold, practised eye. His presence alone makes the air feel heavier.')
-      game.add(speech("You want something?", game.npc?.template.speechColor))
-      game.run('interact', { script: 'onGeneralChat' })
+      npc.say("You want something?")
+      npc.chat()
     } else {
       game.add('An intimidating figure sizes you up with a cold, practised eye. His presence alone makes the air feel heavier.')
-      game.add(speech("You want something?", game.npc?.template.speechColor))
+      npc.say("You want something?")
       game.add('He doesn\'t seem interested in talking until you\'ve proven yourself.')
-      game.addOption('endConversation', { text: "You step back and melt into the crowd.", reply: "Smart. Don't linger." }, 'Leave')
+      npc.leaveOption("You step back and melt into the crowd.", "Smart. Don't linger.")
     }
   },
   scripts: {
     onGeneralChat: (g: Game) => {
-      const npc = g.npc!
+      const npc = g.npc
       // Only show general chat if name is known
       if (npc.nameKnown <= 0) {
         g.add('He doesn\'t seem interested in talking until you\'ve proven yourself.')
         return
       }
-      g.addOption('interact', { script: 'askTerritory' }, "Who runs these streets?")
-      g.addOption('interact', { script: 'wordOnStreet' }, "What's the word?")
-      g.addOption('interact', { script: 'work' }, 'I need work.')
-      g.addOption('endConversation', { text: "You step back and melt into the crowd.", reply: "Smart. Don't linger." }, 'Leave')
+      npc.option("Who runs these streets?", 'askTerritory')
+        .option("What's the word?", 'wordOnStreet')
+        .option('I need work.', 'work')
+        .leaveOption("You step back and melt into the crowd.", "Smart. Don't linger.")
     },
     askTerritory: (g: Game) => {
-      g.add(speech("These streets answer to me. You'd do well to remember that. Pay your respects, keep your head down, and we won't have a problem."))
-      g.run('interact', { script: 'onGeneralChat' })
+      const npc = g.npc
+      npc.say("These streets answer to me. You'd do well to remember that. Pay your respects, keep your head down, and we won't have a problem.")
+      npc.chat()
     },
     wordOnStreet: (g: Game) => {
-      g.add(speech("Constables are jumpy. The Spice Dealer's been moving product. And someone's been asking questions about the old mill. You didn't hear it from me."))
-      g.run('interact', { script: 'onGeneralChat' })
+      const npc = g.npc
+      npc.say("Constables are jumpy. The Spice Dealer's been moving product. And someone's been asking questions about the old mill. You didn't hear it from me.")
+      npc.chat()
     },
     work: (g: Game) => {
-      g.add(speech("Maybe. I don't hand out errands to every face that walks up. Prove you're useful—or at least not a liability. Check back when you've got something to show."))
-      g.run('interact', { script: 'onGeneralChat' })
+      const npc = g.npc
+      npc.say("Maybe. I don't hand out errands to every face that walks up. Prove you're useful—or at least not a liability. Check back when you've got something to show.")
+      npc.chat()
     },
   },
 })

@@ -99,7 +99,8 @@ export const lodgingsScripts = {
     // Phase 1: Landlord greets on backstreet
     g.scene.npc = 'landlord'
     g.add('A weathered figure steps out from a doorway.')
-    g.add(speech(`${g.player.name}, I presume? I'm your landlord. You're all paid up for two weeks. Let me show you around.`))
+    const npc = g.npc
+    npc.say(`${g.player.name}, I presume? I'm your landlord. You're all paid up for two weeks. Let me show you around.`)
     g.timeLapse(5) // Walking to the building
     g.add(option('enterLodgingsPhase2', {}, 'Next'))
   },
@@ -109,7 +110,8 @@ export const lodgingsScripts = {
     g.scene.hideNpcImage = true
     g.timeLapse(2)
     g.add('He leads you down the hallway.')
-    g.add(speech("This is the bathroom - it's shared with the other tenants. Keep it clean, won't you?"))
+    const npc = g.npc
+    npc.say("This is the bathroom - it's shared with the other tenants. Keep it clean, won't you?")
     g.run('move', { location: 'bathroom'})
     g.add(option('finishIntroduction', {}, 'Next'))
   },
@@ -121,7 +123,8 @@ export const lodgingsScripts = {
     g.run('move', { location: 'bedroom' })
     g.scene.hideNpcImage = true
     g.add('You follow your landlord to your room. It\'s a small room, but nice enough and all you need right now. He produces a brass key from his pocket and hands it to you.')
-    g.add(speech("Here's your key. Enjoy your stay.",g.npc?.template.speechColor))
+    const npc = g.npc
+    npc.say("Here's your key. Enjoy your stay.")
     g.run('gainItem', { item: 'room-key', number: 1 , text: 'You now have a key to your room.'})
     g.addQuest('attend-university', {silent: true})
 

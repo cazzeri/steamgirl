@@ -19,9 +19,10 @@ registerNPC('automaton-greeter', {
     npc.location = 'station'
   },
   onApproach: (game: Game) => {
+    const npc = game.npc
     game.add('The automaton greeter clicks and whirs, its brass voicebox producing a mechanical greeting:')
-      .add(speech('Welcome to Ironspark Terminus. How may I assist you today?'))
-    game.addOption('endConversation', { text:'The automaton whirs softly as you depart.', reply: 'Safe travels. May your gears never seize.' }, 'Say goodbye')
+    npc.say('Welcome to Ironspark Terminus. How may I assist you today?')
+    npc.leaveOption('The automaton whirs softly as you depart.', 'Safe travels. May your gears never seize.', 'Say goodbye')
     game.addOption('greeterGetDirections', {}, 'Get directions')
     game.addOption('greeterFlirt', {}, 'Flirt')
   },
@@ -42,10 +43,11 @@ registerNPC('tour-guide', {
     ])
   },
   onApproach: (game: Game) => {
+    const npc = game.npc
     game.add('A man with a well-worn guidebook catches your eye and steps over with a warm smile.')
-    game.add(speech('Rob Hayes. I lead tours of the city for new arrivals. It takes about an hour and ends in the backstreets—handy if that\'s where you\'re headed. Fancy it?'))
+    npc.say('Rob Hayes. I lead tours of the city for new arrivals. It takes about an hour and ends in the backstreets—handy if that\'s where you\'re headed. Fancy it?')
     game.addOption('tourCity', {}, 'Accept')
-    game.addOption('endConversation', { text: 'You politely decline the invitation.', reply: "Whenever you're ready. I'm usually here at the station." }, 'Decline')
+    npc.leaveOption('You politely decline the invitation.', "Whenever you're ready. I'm usually here at the station.", 'Decline')
   },
 })
 
@@ -159,19 +161,22 @@ export const startScripts = {
     const success = g.player.skillTest('Flirtation', 0)
     if (success) {
       g.add('The automaton\'s gears stutter. Its optics flicker.')
-      g.add(speech('I am not programmed for such... input. My valves are operating at 102% capacity. How curious. Would you like a timetable?'))
+      const npc = g.npc
+      npc.say('I am not programmed for such... input. My valves are operating at 102% capacity. How curious. Would you like a timetable?')
       g.run('addStat', { stat: 'Flirtation', change: 1, chance: 1, max: 5 })
     } else {
       g.add('The automaton inclines its head with mechanical precision.')
-      g.add(speech('I am a hospitality unit. Is there something specific you require?'))
+      const npc = g.npc
+      npc.say('I am a hospitality unit. Is there something specific you require?')
     }
   },
 
   greeterGetDirections: (g: Game) => {
     g.add('The automaton gestures with a brass limb.')
-    g.add(speech('The city centre lies straight ahead—follow the main concourse. It is a short walk.'))
+    const npc = g.npc
+    npc.say('The city centre lies straight ahead—follow the main concourse. It is a short walk.')
     g.add('It ticks thoughtfully.')
-    g.add(speech('I am also told there is a serene lake to the east. The university overlooks it, and one can reach it from the market district. Steam rises from the surface—rather picturesque.'))
+    npc.say('I am also told there is a serene lake to the east. The university overlooks it, and one can reach it from the market district. Steam rises from the surface—rather picturesque.')
     g.run('discoverLocation', { location: 'lake' })
   },
 
@@ -184,29 +189,33 @@ export const startScripts = {
     g.scene.hideNpcImage = true // Hide NPC image because we're showing off location scenery
     g.add('You set off with Rob.')
     g.run('go', { location: 'default', minutes: 15 })
-    g.add(speech('Here we are—the heart of Aetheria. Magnificent, isn\'t it?'))
+    const npc = g.npc
+    npc.say('Here we are—the heart of Aetheria. Magnificent, isn\'t it?')
     g.add('Towering brass structures with visible gears and pipes reach toward the sky. Steam-powered carriages glide through cobblestone streets, while clockwork automatons serve the citizens. The air hums with the mechanical pulse of the city.')
     g.add(option('tourUniversity', {}, 'Continue the Tour'))
   },
 
   tourUniversity: (g: Game) => {
     g.run('go', { location: 'school', minutes: 15 })
-    g.add(speech('The University - you\'ll be studying there you say? A fine institution.'))
+    const npc = g.npc
+    npc.say('The University - you\'ll be studying there you say? A fine institution.')
     g.add('Its grand brass doors and halls where you will learn the mechanical arts, steam engineering, and the mysteries of clockwork.')
-    g.add(speech('There\'s a subway here - efficient way to get around the city though it costs 3 Krona. It\'s also pretty safe... most of the time...'))
+    npc.say('There\'s a subway here - efficient way to get around the city though it costs 3 Krona. It\'s also pretty safe... most of the time...')
     g.add(option('tourLake', {}, 'Continue the Tour'))
   },
 
   tourLake: (g: Game) => {
     g.run('go', { location: 'lake', minutes: 18 })
-    g.add(speech('The Lake. A peaceful spot when the city gets too much. Steam off the water—rather lovely.'))
+    const npc = g.npc
+    npc.say('The Lake. A peaceful spot when the city gets too much. Steam off the water—rather lovely.')
     g.add('Steam gently rises from the surface, creating a serene mist. A sanctuary where the mechanical and natural worlds blend.')
     g.add(option('tourMarket', {}, 'Continue the Tour'))
   },
 
   tourMarket: (g: Game) => {
     g.run('go', { location: 'market', minutes: 15 })
-    g.add(speech('The Market. Best place for oddities and curios. Keep your wits about you.'))
+    const npc = g.npc
+    npc.say('The Market. Best place for oddities and curios. Keep your wits about you.')
     g.add('Vendors display exotic mechanical trinkets and clockwork wonders. The air is filled with haggling, the clink of gears, and the hiss of steam. The market throbs. Fingers brush you as you pass—accidental, deliberate, promising.')
     g.add(option('tourBackstreets', {}, 'Continue the Tour'))
   },
@@ -214,14 +223,16 @@ export const startScripts = {
   tourBackstreets: (g: Game) => {
     g.run('go', { location: 'backstreets', minutes: 15 })
     g.add('The alleys close in, narrow and intimate. Gas lamps flicker like dying heartbeats. Somewhere above, gears moan. Somewhere below, something else answers.')
-    g.add(speech('Your room\'s in one of the buildings, I believe. It\'s a nice enough area, but be careful at night.')) 
+    const npc = g.npc
+    npc.say('Your room\'s in one of the buildings, I believe. It\'s a nice enough area, but be careful at night.') 
     g.add(option('tourEnds', {}, 'Finish the Tour'))
   },
 
   tourEnds: (g: Game) => {
     g.scene.hideNpcImage = false
     g.add('Rob shows you around the backstreets for a while.')
-    g.add(speech('I hope this helps you find your feet. Enjoy Aetheria!'))
+    const npc = g.npc
+    npc.say('I hope this helps you find your feet. Enjoy Aetheria!')
     g.add(option('endScene', {text: 'You thank Rob and he leaves you in the backstreets.'}, 'Say goodbye'))
   },
 }

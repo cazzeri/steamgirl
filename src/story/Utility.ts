@@ -381,7 +381,14 @@ export const utilityScripts = {
     const text = params.text ?? 'You politely end the conversation.'
     game.add(text)
     if (params.reply) {
-      game.add(speech(params.reply,game.npc?.template.speechColor ?? '#a8d4f0'))
+      // Only use fluent API if NPC is in scene
+      if (game.scene.npc) {
+        const npc = game.npc
+        npc.say(params.reply)
+      } else {
+        // Fallback for edge cases where endConversation is called without NPC
+        game.add(speech(params.reply, '#a8d4f0'))
+      }
     }
   },
 
