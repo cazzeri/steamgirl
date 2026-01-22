@@ -3,6 +3,7 @@ import { Button } from './Button'
 import { useGame } from '../context/GameContext'
 import { useGameLoader } from '../context/GameLoaderContext'
 import { Clock } from './Clock'
+import { WaitPanel } from './WaitPanel'
 import { InventoryView } from './InventoryView'
 import { Game } from '../model/Game'
 import { Card } from './Card'
@@ -147,8 +148,12 @@ export function PlayerPanel() {
     <div className="player-panel panel-elevated" style={{ height: '100%' }}>
       <AvatarPanel />
 
-      <div className="game-canvas canvas-framed">
+      <div className="widget-container">
         <Clock />
+        <WaitPanel />
+      </div>
+
+      <div className="game-canvas canvas-framed">
         <div className="panel-tabs">
           <div className="tabs-header">
             {tabs.map((tab) => (

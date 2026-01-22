@@ -125,7 +125,7 @@ img {
   padding: var(--space-sm);
 
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto auto 1fr auto;
   gap: var(--space-sm);
   height: 100%;
 }
@@ -236,7 +236,7 @@ img {
 .game-canvas {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 0;
   width: 100%;
 }
 
@@ -466,37 +466,26 @@ img {
 }
 
 /* Clock and wait: shared panel style, always above tabs */
-.clock-container {
+.widget-container {
   display: flex;
   flex-direction: row;
-  align-items: stretch;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
   flex-wrap: wrap;
   flex-shrink: 0;
-  padding: var(--space-xs);
-}
-
-.clock-panel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-xs);
-  background: rgba(34, 24, 16, 0.9);
-  border: 1px solid rgba(220, 170, 90, 0.4);
-  border-radius: 8px;
-  box-sizing: border-box;
-}
-
-.clock-panel--clock {
   padding: 0;
-  width: 200px;
+  border: none;
+  background: transparent;
 }
 
-.clock-panel--wait {
-  padding: var(--space-xsS);
-  min-width: 100px;
-  color: var(--text-muted);
+.widget-panel {
+  position: relative;
+  width: 200px;
+  height: 120px;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-sizing: border-box;
 }
 
 .clock-svg {
