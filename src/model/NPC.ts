@@ -1,5 +1,6 @@
 import { Game } from "./Game"
 import type { Script } from "./Scripts"
+import { speech } from "./Format"
 
 export type NPCId = string
 
@@ -127,6 +128,36 @@ export class NPC {
       throw new Error(`NPC definition not found: ${this.id}`)
     }
     return definition
+  }
+
+  /** Makes this NPC say something. Uses the NPC's speech color. Returns this for fluent chaining. */
+  say(dialogText: string): this {
+    this.game.add(speech(dialogText, this.template.speechColor))
+    return this
+  }
+
+  /** Adds an option for an NPC interaction with this NPC. Returns this for fluent chaining. */
+  option(label: string, npcInteractionName: string, params?: object): this {
+    this.game.addOption('interact', { script: npcInteractionName, params }, label)
+    return this
+  }
+
+  /** Runs the onGeneralChat script for this NPC. Returns this for fluent chaining. */
+  chat(): this {
+    this.game.run('interact', { script: 'onGeneralChat' })
+    return this
+  }
+
+  /** Ends the conversation by adding an endConversation option. Returns this for fluent chaining. */
+  leaveOption(text?: string, reply?: string, label: string = 'Leave'): this {
+    this.game.addOption('endConversation', { text, reply }, label)
+    return this
+  }
+
+  /** Adds a generic option (for non-NPC scripts). Returns this for fluent chaining. */
+  addOption(scriptName: string, params: {} = {}, label?: string): this {
+    this.game.addOption(scriptName, params, label)
+    return this
   }
 
   toJSON(): NPCData {

@@ -36,51 +36,51 @@ registerNPC('spice-dealer', {
   image: '/images/npcs/dealer.jpg',
   speechColor: '#7a8b6b',
   onApproach: (game: Game) => {
-    const npc = game.npc!
+    const npc = game.npc
     if (npc.nameKnown > 0) {
       game.add('The spice dealer eyes you warily, his mechanical hand twitching. "What do you want?" he asks in a low voice.')
-      game.run('interact', { script: 'onGeneralChat' })
+      npc.chat()
     } else {
       game.add('A shady figure eyes you warily, his mechanical hand twitching. "What do you want?" he asks in a low voice.')
       const price = npc.affection >= 10 ? 5 : 10
-      game.addOption('interact', { script: 'buySpice' }, `Buy Spice (${price} Kr)`)
-      game.addOption('interact', { script: 'flirt' }, 'Flirt')
-      game.addOption('endConversation', { text: 'You step away. He watches you go with a flicker of suspicion.', reply: "Watch yourself out there." }, 'Leave')
+      npc.option(`Buy Spice (${price} Kr)`, 'buySpice')
+        .option('Flirt', 'flirt')
+        .leaveOption('You step away. He watches you go with a flicker of suspicion.', "Watch yourself out there.")
     }
   },
   scripts: {
     onGeneralChat: (g: Game) => {
-      const npc = g.npc!
+      const npc = g.npc
       // Only show general chat if name is known (they've introduced themselves)
       if (npc.nameKnown <= 0) {
         g.add('He doesn\'t seem interested in talking until you\'ve done business.')
         return
       }
       const price = npc.affection >= 10 ? 5 : 10
-      g.addOption('interact', { script: 'buySpice' }, `Buy Spice (${price} Kr)`)
-      g.addOption('interact', { script: 'flirt' }, 'Flirt')
-      g.addOption('endConversation', { text: 'You step away. He watches you go with a flicker of suspicion.', reply: "Watch yourself out there." }, 'Leave')
+      npc.option(`Buy Spice (${price} Kr)`, 'buySpice')
+        .option('Flirt', 'flirt')
+        .leaveOption('You step away. He watches you go with a flicker of suspicion.', "Watch yourself out there.")
     },
     buySpice: (g: Game) => {
-      const npc = g.npc!
+      const npc = g.npc
       const price = npc.affection >= 10 ? 5 : 10
       const crown = g.player.inventory.find((i) => i.id === 'crown')?.number ?? 0
       if (crown < price) {
-        g.add(speech(`You need ${price} Krona. Come back when you've got it.`, g.npc?.template.speechColor))
+        npc.say(`You need ${price} Krona. Come back when you've got it.`)
         return
       }
       g.player.removeItem('crown', price)
       g.run('gainItem', { item: 'spice', number: 1, text: 'You receive a small packet of Spice.' })
-      g.add(speech('Pleasure doin\' business. Don\'t say where you got it.', g.npc?.template.speechColor))
+      npc.say('Pleasure doin\' business. Don\'t say where you got it.')
       // After buying, they introduce themselves
       if (npc.nameKnown <= 0) {
         npc.nameKnown = 1
         g.add('"Name\'s Johnny Bug," he says, extending his mechanical hand. "You\'re alright."')
-        g.run('interact', { script: 'onGeneralChat' })
+        npc.chat()
       }
     },
     flirt: (g: Game) => {
-      const npc = g.npc!
+      const npc = g.npc
       const ok = g.player.skillTest('Flirtation', 0)
       if (ok) {
         // Increase affection by +5, capped at 40
@@ -88,9 +88,9 @@ registerNPC('spice-dealer', {
         npc.affection = Math.min(currentAffection + 5, 40)
         g.add('He softens slightly, the corner of his mouth quirking. After a pause, he nods.')
         if (npc.affection >= 10 && currentAffection < 10) {
-          g.add(speech('Alright. For you? Five. Don\'t spread it around.', g.npc?.template.speechColor))
+          npc.say('Alright. For you? Five. Don\'t spread it around.')
         } else {
-          g.add(speech('You\'re alright.', g.npc?.template.speechColor))
+          npc.say('You\'re alright.')
         }
         // After successful flirt, they introduce themselves
         if (npc.nameKnown <= 0) {
@@ -98,7 +98,7 @@ registerNPC('spice-dealer', {
           g.add('"Name\'s Johnny Bug," he says with a slight grin. "You\'re alright."')
         }
       } else {
-        g.add(speech('Save it. I\'m not buyin\'.', g.npc?.template.speechColor))
+        npc.say('Save it. I\'m not buyin\'.')
       }
     },
   },

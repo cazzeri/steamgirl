@@ -136,12 +136,16 @@ export class Game {
     return this.scene.options.length > 0
   }
 
-  /** Gets the current NPC. */
-  get npc(): NPC | null {
+  /** Gets the current NPC. Throws if no NPC is in the current scene. */
+  get npc(): NPC {
     if (!this.scene.npc) {
-      return null
+      throw new Error('No NPC in current scene')
     }
-    return this.npcs.get(this.scene.npc) ?? null
+    const npc = this.npcs.get(this.scene.npc)
+    if (!npc) {
+      throw new Error(`NPC not found: ${this.scene.npc}`)
+    }
+    return npc
   }
 
   /** Gets an NPC from the game's NPCs map, generating it if needed. Returns the NPC instance. */
